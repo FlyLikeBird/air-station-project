@@ -1,0 +1,93 @@
+.modal-container {
+    border:1px solid #4c4c4c;
+    background-color:#000;
+}
+
+.modal-container :global(.ant-modal-header){
+    background-color:#000;
+    border-bottom:none;
+    padding:24px 16px 0 16px;
+}
+.modal-container :global(.ant-modal-header) > :global(.ant-modal-title){
+    color:#fff;
+    text-align:center;
+    font-size:1.5rem;
+}
+.form-container {
+    
+}
+.form-container :global(.ant-form-item):global(.ant-form-item-with-help) {
+    margin-bottom:24px;
+}
+.form-container :global(.ant-form-item) > :global(.ant-form-item-label){
+    background-color:#0b3966;
+    padding:6px 0;
+}
+
+.form-container :global(.ant-form-item) > :global(.ant-form-item-label) > label {
+    color:#fff;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-form-item-explain) {
+    position:absolute;
+    top:100%;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) input {
+    background:transparent !important;
+    border:1px solid #0b3966;
+    height:44px;
+    color:#fff;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-input-wrapper) :global(.ant-input-group-addon) {
+    background:#0b3966;
+    color:#fff;
+    border:1px solid #0b3966;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) textarea {
+    background:transparent;
+    color:#fff;
+    border:1px solid #0b3966;
+}
+/* Form中Select组件样式 */
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-select) :global(.ant-select-selector) {
+    background:transparent !important;
+    border:1px solid #0b3966;
+    height:44px;
+    color:#fff;
+    align-items: center;
+}
+
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-select):global(.ant-select-multiple) :global(.ant-select-selector) :global(.ant-select-selection-item) {
+    background:#0b3966;
+    color:#fff;
+    border:1px solid #1c60a5;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-select) :global(.ant-select-clear)  {
+    color: #fff;
+    opacity: 1;
+    background: transparent;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-select) :global(.ant-select-selector) :global(.ant-select-selection-item) :global(.ant-select-selection-item-remove){
+    color:#fff;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-select) :global(.ant-select-arrow)  {
+    color:#0b3966;
+}
+/* Form中DatePicker组件样式 */
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-picker) {
+    background:transparent;
+    border:1px solid #0b3966;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-picker) input {
+    border:none;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-picker) :global(.ant-picker-suffix) {
+    color:#0b3966;
+}
+/* 自动填充样式修改 */
+.form-container input:-webkit-autofill { 
+	box-shadow: 0 0 0px 1000px #000 inset !important;
+	text-fill-color:#fff;
+	-webkit-text-fill-color: #fff;
+
+
+}

@@ -1,0 +1,12 @@
+.flow-water {
+    animation: flow 3s ease-in-out infinite;
+}
+
+@keyframes flow {
+    0% {
+        stroke-dashoffset:305 ;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}

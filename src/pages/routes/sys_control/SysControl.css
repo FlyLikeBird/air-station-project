@@ -1,0 +1,64 @@
+.inline-container {
+    height:100%;
+    padding:2rem 4rem;
+}
+
+.inline-container-content {
+    height:84%;
+}
+
+.inline-container-footer {
+    height:16%;
+    text-align: center;
+    padding:1rem 0;
+}
+.inline-item-wrapper {
+    display:inline-block;
+    width:25%;
+    color:#fff;
+    padding:0 2rem 1rem 0;
+}
+
+.inline-item-wrapper .inline-item {
+    width:100%;
+    border:1px solid #1a4884;
+    display:flex;
+    align-items: center;
+}
+
+.inline-item .inline-item-label {
+    width:40%;
+    height:4rem;
+    line-height: 4rem;
+    background-color:#1a4884;
+    text-align: center;
+}
+
+.inline-item .inline-item-switch {
+    width:60%;
+    height:4rem;
+    line-height: 4rem;
+    text-align: center;
+}
+
+.inline-item .custom-switch {
+    width:90px;
+    height:30px;
+    background-color:#585867;
+}
+.inline-item .custom-switch:global(.ant-switch-checked) {
+    background-color:#1890ff;
+}
+
+.inline-item .custom-switch :global(.ant-switch-handle) {
+    width:24px;
+    height:24px;
+    top:3px;
+    left:2px;
+}
+.inline-item .custom-switch:global(.ant-switch-checked) :global(.ant-switch-handle) {
+    left:calc(100% - 25px - 2px)
+}
+.inline-item .custom-switch :global(.ant-switch-handle)::before {
+    border-radius:50%;
+}

@@ -7,12 +7,7 @@ import arrow from '../../../../../public/arrow.png';
 import onImg from '../../../../../public/status_on.png';
 import offImg from '../../../../../public/status_off.png';
 
-let infoStyle = {
-    display:'flex',
-    alignItems:'center',
-    color:'#fff',
-    padding:'0.5rem 1rem'
-}
+
 let airMachMaps = {
     '01#英格索兰200HP':'ACSUB0752XWS01',
     '02#巨风100HP':'ACSUB0752XWS02',
@@ -33,8 +28,8 @@ let eleMachMaps = {
 let smallPadding = 20, largePadding = 40;
 let posMaps = {
     '01#英格索兰200HP':{ img:airMach, title:'01#英格索兰200HP', left:0, top:0, width:84, height:84, inPortDirec:'right', inPortOffset:42, outPortDirec:'right', outPortOffset:48  },
-    '05#阿特拉斯50HP':{ img:airMach, title:'05#阿特拉斯50HP', left:0, top:84 + largePadding + ( 84 + largePadding ) * 2, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
-    '04#阿特拉斯50HP':{ img:airMach, title:'04#阿特拉斯50HP', left:0, top:84 + largePadding + ( 84 + largePadding ) * 3, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
+    '04#阿特拉斯50HP':{ img:airMach, title:'04#阿特拉斯50HP', left:0, top:84 + largePadding + ( 84 + largePadding ) * 2, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
+    '05#阿特拉斯50HP':{ img:airMach, title:'05#阿特拉斯50HP', left:0, top:84 + largePadding + ( 84 + largePadding ) * 3, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
     '03#巨风50HP':{ img:airMach, title:'03#巨风50HP', left:0, top: 84 + 84 + largePadding * 2, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
     '02#巨风100HP':{ img:airMach, title:'02#巨风100HP', left:0, top:84 + largePadding , width:84, height:84, outPortDirec:'right', outPortOffset:42  },
     '1#储气罐':{ img:gasMach, title:'1#储气罐', left:260, top:20, width:64, height:202, inPortDirec:'left', inPortOffset:50, outPortDirec:'right', outPortOffset:120  },
@@ -78,7 +73,7 @@ function createPattern(img, xOffset=0, yOffset=0){
     return context.createPattern(canvasCreated, 'repeat');
     
 }
-function FlowChart({ dispatch, sumInfo, statusMaps }){
+function FlowChart({ dispatch, sumInfo, statusMaps, theme }){
     let containerRef = useRef();
     let [info, setInfo] = useState({});
     useEffect(()=>{
@@ -179,7 +174,7 @@ function FlowChart({ dispatch, sumInfo, statusMaps }){
                 }
                 polyLine.setAttribute('points', path);               
                 polyLine.setAttribute('stroke-width',lineWidth);
-                polyLine.setAttribute('stroke','#0c325a');
+                polyLine.setAttribute('stroke', theme === 'dark' ? '#0c325a' : '#ddd');
                 polyLine.setAttribute('fill','none');
                 svg.appendChild(polyLine);
                 // 绘制标明流向的渐变线段
@@ -243,6 +238,8 @@ function FlowChart({ dispatch, sumInfo, statusMaps }){
                 label.setAttribute('y', posMaps[key].top );
                 label.setAttribute('width', 40);
                 label.setAttribute('height',20);
+                label.setAttribute('rx', 4);
+                label.setAttribute('ry', 4);
                 label.setAttribute('fill','#059af1');
                 
                 innerText.setAttribute('x', posMaps[key].left + posMaps[key].width );
@@ -273,6 +270,12 @@ function FlowChart({ dispatch, sumInfo, statusMaps }){
         }
        
     },[])
+    let infoStyle = {
+        display:'flex',
+        alignItems:'center',
+        color: theme === 'dark' ? '#fff' : 'rgba(0, 0, 0, 0.8)',
+        padding:'0.5rem 1rem'
+    }
     return (
         <div style={{ width:'80%', height:'96%', margin:'0 auto' }} >
             <svg 
@@ -290,55 +293,55 @@ function FlowChart({ dispatch, sumInfo, statusMaps }){
                   </linearGradient>
                 </defs>
             </svg>
-            <div style={{ fontSize:'0.8rem', width:'240px', position:'absolute', display:Object.keys(info).length ? 'block':'none', top:'50%', left:'1rem', transform:'translateY(-50%)', backgroundColor:'#191932', border:'2px solid #03a3fe', borderRadius:'4px' }}>
-                <div style={{ fontSize:'1rem', height:'2rem', lineHeight:'2rem', backgroundColor:'#03a3fe', textAlign:'center', color:'#fff' }}>{ info.title }</div>
+            <div style={{ fontSize:'0.8rem', width:'240px', position:'absolute', display:Object.keys(info).length ? 'block':'none', top:'50%', left:'1rem', transform:'translateY(-50%)', backgroundColor: theme === 'dark' ? '#191932' : '#fff', border: theme === 'dark' ? '2px solid #03a3fe' : '2px solid #ddd', borderRadius:'4px' }}>
+                <div style={{ fontSize:'1rem', height:'2rem', lineHeight:'2rem', backgroundColor: theme === 'dark' ? '#03a3fe' : '#ddd', textAlign:'center', color: theme ==='dark' ? '#fff' : 'rgba(0, 0, 0, 0.8)' }}>{ info.title }</div>
                 <div style={infoStyle}>
                     <div>运行状态</div>
-                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgb(52, 85, 126)', margin:'0px 6px' }}></div>
+                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgba(0, 0, 0, 0.2)', margin:'0px 6px' }}></div>
                     <div>{ info.runningStatus }</div>
                 </div>
                 <div style={infoStyle}>
                     <div>加载状态</div>
-                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgb(52, 85, 126)', margin:'0px 6px' }}></div>
+                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgba(0, 0, 0, 0.2)', margin:'0px 6px' }}></div>
                     <div>{ info.loadingStatus }</div>
                 </div>
                 <div style={infoStyle}>
                     <div>排气压力</div>
-                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgb(52, 85, 126)', margin:'0px 6px' }}></div>
+                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgba(0, 0, 0, 0.2)', margin:'0px 6px' }}></div>
                     <div>{ info.pressure + ' ' + 'bar' }</div>
                 </div>
                 <div style={infoStyle}>
                     <div>排气温度</div>
-                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgb(52, 85, 126)', margin:'0px 6px' }}></div>
+                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgba(0, 0, 0, 0.2)', margin:'0px 6px' }}></div>
                     <div>{ info.temp + ' ' + '℃' }</div>
                 </div>
                 <div style={infoStyle}>
                     <div>运行时间</div>
-                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgb(52, 85, 126)', margin:'0px 6px' }}></div>
+                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgba(0, 0, 0, 0.2)', margin:'0px 6px' }}></div>
                     <div>{ ( info.runningTime || '--' ) + ' ' + '小时' }</div>
                 </div>
                 <div style={infoStyle}>
                     <div>实时电流</div>
-                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgb(52, 85, 126)', margin:'0px 6px' }}></div>
+                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgba(0, 0, 0, 0.2)', margin:'0px 6px' }}></div>
                     <div>{ info.current +' ' + 'A' }</div>
                 </div>
             </div>
             {/* 母管状态 */}
-            <div style={{ fontSize:'0.8rem', width:'240px', position:'absolute', display:'block', top:'162px', right:'60px', transform:'translateY(-50%)', backgroundColor:'#191932', border:'2px solid #03a3fe', borderRadius:'4px' }}>
-                <div style={{ fontSize:'1rem', height:'2rem', lineHeight:'2rem', backgroundColor:'#03a3fe', textAlign:'center', color:'#fff' }}>母管状态</div>
+            <div style={{ fontSize:'0.8rem', width:'240px', position:'absolute', display:'block', top:'162px', right:'60px', transform:'translateY(-50%)', backgroundColor: theme === 'dark' ? '#191932' : '#fff', border: theme === 'dark' ? '2px solid #03a3fe' : '2px solid #ddd', borderRadius:'4px' }}>
+                <div style={{ fontSize:'1rem', height:'2rem', lineHeight:'2rem', backgroundColor: theme === 'dark' ? '#03a3fe' : '#ddd', textAlign:'center', color: theme ==='dark' ? '#fff' : 'rgba(0, 0, 0, 0.8)' }}>母管状态</div>
                 <div style={infoStyle}>
                     <div>瞬时流量</div>
-                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgb(52, 85, 126)', margin:'0px 6px' }}></div>
+                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgba(0, 0, 0, 0.2)', margin:'0px 6px' }}></div>
                     <div>{ sumInfo.speed }</div>
                 </div>
                 <div style={infoStyle}>
                     <div>气体压力</div>
-                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgb(52, 85, 126)', margin:'0px 6px' }}></div>
+                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgba(0, 0, 0, 0.2)', margin:'0px 6px' }}></div>
                     <div>{ sumInfo.pressure }</div>
                 </div>
                 <div style={infoStyle}>
                     <div>露点温度</div>
-                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgb(52, 85, 126)', margin:'0px 6px' }}></div>
+                    <div style={{ flex:'1', height:'1px', backgroundColor:'rgba(0, 0, 0, 0.2)', margin:'0px 6px' }}></div>
                     <div>-- --</div>
                 </div>
             </div>

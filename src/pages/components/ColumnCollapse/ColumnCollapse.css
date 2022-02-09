@@ -58,6 +58,9 @@
 }
 
 .sidebar-container > div:not(.flex-pointer) {
+    background-color:#fff;
+}
+.container.dark .sidebar-container > div:not(.flex-pointer) {
     background-color:rgb(25 26 47);
 }
 .sidebar-container > div, .content-container > div {

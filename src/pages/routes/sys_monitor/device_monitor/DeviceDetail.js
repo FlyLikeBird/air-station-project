@@ -15,14 +15,14 @@ const contentStyle = {
     backgroundColor:'#3b5b85'
 }
 
-function DeviceDetail({ dispatch, info, data, isLoading  }){
+function DeviceDetail({ dispatch, info, data, theme, isLoading  }){
     const inputRef = useRef();
     useEffect(()=>{
         dispatch({ type:'device/fetchDeviceDetail', payload:{ device_id:info.machInfo.device_id }});
     },[info]);
     return (
         <div style={{ height:'100%'}}>
-            <div className={style['inline-container'] + ' ' + style['dark']}>
+            <div className={style['inline-container'] + ' ' + ( theme === 'dark' ? style['dark'] : '')}>
                 <div className={style['inline-item-wrapper']} style={{ width:'33.3%', height:'50%'}}>
                     <div className={style['inline-item']} style={{ position:'relative' }}>
                         <div style={{ position:'absolute', right:'0', top:'0'}}>
@@ -98,7 +98,7 @@ function DeviceDetail({ dispatch, info, data, isLoading  }){
                                     xData={data.view.date} 
                                     yData={ info.machInfo.device_type === 1 ? data.view.pressure : data.view.outPress } 
                                     name={ info.machInfo.device_type === 1 ? '总管压力' : '机组排气压力'} 
-                                    theme='dark'
+                                    theme={theme}
                                 />
                             }
                         </div>
@@ -133,7 +133,7 @@ function DeviceDetail({ dispatch, info, data, isLoading  }){
                                     xData={data.view.date} 
                                     yData={ info.machInfo.device_type === 1 ? data.view.speed : data.view.outTemp } 
                                     name={ info.machInfo.device_type === 1 ? '瞬时流量' : '主机排气温度'} 
-                                    theme='dark'
+                                    theme={theme}
                                 />
                             }
                         </div>

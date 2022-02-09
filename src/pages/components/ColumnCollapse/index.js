@@ -30,7 +30,6 @@ function ColumnCollapse({ sidebar, content, user, mode }){
                 e.stopPropagation();
                 e.preventDefault();
                 if ( !canDrag ) return;
-                console.log(canDrag);
                 moveX = e.clientX - startX ;
                 startX = e.clientX;
                 setWidth((width)=>{
@@ -65,7 +64,6 @@ function ColumnCollapse({ sidebar, content, user, mode }){
                 {  sidebar }
                 <div className={style['flex-pointer']} ref={pointerRef} style={{ left:`${padding + width - 6 }px` }}></div>             
             </div>
-            
             <div className={style['content-container']} style={{ left: padding + width + ( hidden ? 0 : padding ) + 'px', width:`calc( 100% - ${width + padding * 2 + ( hidden ? 0 : padding )}px)` }}>
                 { content }
                 {

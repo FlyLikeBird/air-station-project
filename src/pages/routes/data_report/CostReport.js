@@ -36,7 +36,7 @@ let categoryMaps = {
         { title:'排气温度(℃)', type:'main_tmp_out' }
     ]
 }
-function CostReport({ dispatch, type, data, columns, currentPage, total, timeType, startDate, endDate }){
+function CostReport({ dispatch, type, data, columns, currentPage, total, timeType, startDate, endDate, theme }){
     useEffect(()=>{
         if ( type === 'running') {
             dispatch({ type:'user/toggleTimeType', payload:'1' });
@@ -119,13 +119,13 @@ function CostReport({ dispatch, type, data, columns, currentPage, total, timeTyp
                     }
                 }}><FileExcelOutlined style={{ fontSize:'1.2rem' }} /></div>
             </div>
-            <div style={{ height:'calc( 100% - 40px)', position:'relative', overflow:'scroll auto', backgroundColor:'#191a2f', color:'#b0b0b0', borderRadius:'4px' }}>
+            <div style={{ height:'calc( 100% - 40px)', position:'relative', overflow:'scroll auto', backgroundColor: theme === 'dark' ? '#191a2f' : '#fff', color:'#b0b0b0', borderRadius:'4px' }}>
                 
                 <Table
                     columns={columns}
                     dataSource={data}
                     rowKey='device_name'
-                    className={style['self-table-container'] + ' ' + style['dark']}
+                    className={style['self-table-container'] + ' ' + ( theme === 'dark' ? style['dark'] : '') }
                     onChange={(pagination)=>{
                         setCurrentPage(pagination.current);
                     }}

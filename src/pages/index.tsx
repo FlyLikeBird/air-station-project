@@ -11,9 +11,9 @@ function isFullscreen(){
 }
 
 function IndexPage({ children, user }){
-    let { currentMenu } = user;
+    let { currentMenu, theme } = user;
     return (
-        <div className={style['container'] + ' ' + style['dark']} >
+        <div className={style['container'] + ' ' + ( theme === 'dark' ? style['dark'] : '' )} >
             <Header />
             <div className={style['main-content']} style={ isFullscreen() && currentMenu.menu_code === 'gas_home' ?  { height:'100%' } : { height:'calc(100% - 60px)'} }>
                 { children }

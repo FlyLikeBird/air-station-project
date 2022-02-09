@@ -31,7 +31,7 @@ function EleMonitor({ dispatch, user, gasMonitor }){
             {
                 Object.keys(gasInfo).length 
                 ?
-                <div className={style['flex-container'] + ' ' + style['dark']} style={{ height:'24%', paddingBottom:'1rem' }}>
+                <div className={style['flex-container'] + ' ' + ( user.theme === 'dark' ? style['dark'] : '' )} style={{ height:'24%', paddingBottom:'1rem' }}>
                 {
                     gasInfo.infoList && gasInfo.infoList.length
                     ?
@@ -99,7 +99,7 @@ function EleMonitor({ dispatch, user, gasMonitor }){
                                     ?
                                     null
                                     :
-                                    <LineChart info={item} data={chartInfo} theme='dark' />
+                                    <LineChart info={item} data={chartInfo} theme={user.theme} />
                                 }
                                    
                             </TabPane>

@@ -23,7 +23,6 @@
 .inline-container .inline-item-wrapper .inline-item {
     height:100%;
     position:relative;
-    color:#fff;
 }
 
 .inline-container .inline-item-wrapper .inline-item .inline-item-title {
@@ -46,7 +45,7 @@
 
 .inline-container .inline-item-wrapper .inline-item .inline-item-content {
     height:calc( 100% - 32px);
-    background-color:#f6f7fb;
+    background-color:#fff;
     display:flex;
     align-items: center;
     position:relative;
@@ -65,8 +64,11 @@
     color:#b5c0cc;
 }
 .inline-container .inline-item .data {
-    color:#fff;
+    color:rgba(0, 0, 0, 0.8);
     font-weight:bold;
+}
+.inline-container.dark .inline-item .data {
+    color:#fff;
 }
 .inline-container-footer {
     height:4%;

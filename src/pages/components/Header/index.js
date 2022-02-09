@@ -24,8 +24,14 @@ function isFullscreen(){
 }
 
 function enterFullScreen(el){
-    let func = el.requestFullscreen || el.msRequestFullscreen || el.mozRequestFullscreen || el.webkitRequestFullscreen ;
-    if ( func && typeof func === 'function' ) func.call(el);
+    try {
+        if ( document.documentElement.requestFullscreen ) {
+            document.documentElement.requestFullscreen();
+        }
+    } catch(err){
+        console.log(err);
+    }
+    
 }
 
 function cancelFullScreen(el ){
@@ -71,7 +77,7 @@ function Header({ dispatch, user }){
     let isHomePage = currentMenu.menu_code === '/' || currentMenu.menu_code === 'gas_home' ? true : false;
     return (
         
-        <div ref={containerRef} className={style['container']} style={{ display : isFulled && isHomePage ? 'none' : 'flex' }}>
+        <div ref={containerRef} className={style['container'] + ' ' + ( user.theme === 'dark' ? style['dark'] : '')} style={{ display : isFulled && isHomePage ? 'none' : 'flex' }}>
             <div style={{ display:'inline-flex', alignItems:'center' }}>
                 <img src={Object.keys(thirdAgent).length ? thirdAgent.logo_path : ''} style={{ height:'50%' }} />
                 <span className={style['title']}>

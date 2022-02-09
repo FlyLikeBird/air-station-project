@@ -9,7 +9,7 @@ import moment from 'moment';
 const reg = /\/info_manage_menu\/manual_input\/([^\/]+)\/(\d+)/;
 const companyReg = /\?companyId=(\d*)/;
 const agentReg = /\?agent=(.*)/;
-const agentReg2 = /iot-(.*)/;
+const agentReg2 = /acs-(.*)/;
 let energyList = [
     { type_name:'电', type_code:'ele', type_id:'1', unit:'kwh'},
     { type_name:'水', type_code:'water', type_id:'2', unit:'m³'},
@@ -27,10 +27,10 @@ function createWebSocket(url, data, companyId, dispatch){
         }
         ws.send(`com:${companyId}`);
     };
-    ws.onclose = function(){
-        console.log('socket close...');
-        reconnect(url, data, companyId, dispatch);
-    };
+    // ws.onclose = function(){
+    //     console.log('socket close...');
+    //     reconnect(url, data, companyId, dispatch);
+    // };
     ws.onerror = function(){
         console.log('socket error...');
         reconnect(url, data, companyId, dispatch);
@@ -121,7 +121,7 @@ export default {
                 }
                 if ( pathname !== '/login') {
                     new Promise((resolve, reject)=>{
-                        dispatch({type:'userAuth', payload: { dispatch, query:location.search, resolve, pathname }})
+                        dispatch({type:'userAuth', payload: { dispatch, query:location.search, userid:location.query.userid, resolve, pathname }})
                     })
                     .then(()=>{
                         dispatch({type:'setRoutePath', payload:{ pathname }});    
@@ -134,7 +134,7 @@ export default {
         *userAuth(action, {call, select, put, all}){ 
             try {
                 let { user: { userInfo, authorized, socket, thirdAgent }} = yield select();
-                let { dispatch, query, pathname, resolve, reject } = action.payload || {};
+                let { dispatch, query, userid, pathname, resolve, reject } = action.payload || {};
                 // 如果是第三方服务商
                 // let thirdAgent;
                 // if ( localStorage.getItem('third_agent') ){
@@ -152,6 +152,9 @@ export default {
                         defaultCompanyId = defaultCompany[Object.keys(defaultCompany)[0]];
                     }
                     let company_id = matchResult ? matchResult[1] : defaultCompanyId;
+                    if ( userid ){
+                        localStorage.setItem('user_id', userid);       
+                    }
                     let { data } = yield call( matchResult ? agentUserAuth : userAuth, { app_type:'3'});
                     if ( data && data.code === '0' ){
                         // 先判断是否是第三方代理商账户
@@ -231,29 +234,17 @@ export default {
             if ( Object.keys(thirdAgent).length ){
                 yield put({ type:'clearUserInfo'});
                 yield put({ type:'fields/cancelAll'});
+                yield put({ type:'gasMach/reset'});
                 yield put(routerRedux.push(`/login?agent=${encryptBy(thirdAgent.agent_id)}`)); 
             } else {
                 yield put({type:'clearUserInfo'});
                 yield put({ type:'fields/cancelAll'});
+                yield put({ type:'gasMach/reset'});
                 yield put(routerRedux.push('/login'));
             }
             if ( socket && socket.close ){
                 socket.close();
                 socket = null;
-            }
-        },
-        *thirdAgentAuth(action, { call, put}){
-            let { pathname, search } = action.payload || {};
-            if ( search ){
-                let match = agentReg.exec(search);
-                if ( match && match.length ){
-                    let param = match[1];
-                    let agentId = decryptBy(param);
-                    let { data } = yield call(getThirdAgentInfo, { agent_id:agentId });
-                    if ( data && data.code === '0'){
-                        yield put({ type:'setThirdAgentInfo', payload:{ data:data.data }});
-                    }
-                }
             }
         },
         *fetchNewThirdAgent(action, { put, select, call}){
@@ -384,9 +375,6 @@ export default {
         },
         toggleCurrentMenu(state, { payload }){
             return { ...state, currentMenu:payload };
-        },
-        setThirdAgentInfo(state, { payload:{ data }}){
-            return { ...state, thirdAgent:data };
         },
         getThirdAgent(state, { payload:{ data }}){
             return { ...state, thirdAgent:data };

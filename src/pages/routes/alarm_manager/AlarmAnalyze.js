@@ -34,7 +34,7 @@ function AlarmAnalyze({ dispatch, user, alarm }){
                             {
                                 loaded 
                                 ?
-                                <PieChart data={chartInfo['typeRecords'] || {}} title='告警分析' />
+                                <PieChart data={chartInfo['typeRecords'] || {}} title='告警分析' theme={user.theme} />
                                 :
                                 <Spin className={style['spin']} />
                             }
@@ -45,7 +45,7 @@ function AlarmAnalyze({ dispatch, user, alarm }){
                             {
                                 loaded 
                                 ?
-                                <PieChart data={chartInfo['statusInfo'] || {}} title='处理进度' />
+                                <PieChart data={chartInfo['statusInfo'] || {}} title='处理进度' theme={user.theme} />
                                 :
                                 <Spin className={style['spin']} />
                             }
@@ -57,7 +57,7 @@ function AlarmAnalyze({ dispatch, user, alarm }){
                         {
                             loaded 
                             ?
-                            <BarChart data={chartInfo['valueArr']} title='告警趋势' theme='dark' timeType={user.timeType} />
+                            <BarChart data={chartInfo['valueArr']} title='告警趋势' theme={user.theme} timeType={user.timeType} />
                             :
                             <Spin className={style['spin']} />
                         }

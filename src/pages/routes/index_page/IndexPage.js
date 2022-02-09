@@ -3,13 +3,13 @@ import { connect } from 'dva';
 import { Spin } from 'antd';
 import style from './airStation.css';
 import IndexStyle from '@/pages/IndexPage.css';
-import AreaLineChart from './components/AreaLineChart';
 import LineChart from './components/LineChart';
 import BarChart from './components/BarChart';
 import GaugeChart from './components/GaugeChart';
 import NumberFormat from './components/NumberFormat';
 import SceneModel from './SceneModel';
 import ScrollTable from '@/pages/components/ScrollTable';
+import CustomTabs from './CustomTabs';
 import FullscreenHeader from '@/pages/components/FullscreenHeader';
 import monitorBg from '../../../../public/monitor_bg.jpg'
 
@@ -81,18 +81,7 @@ function IndexPage({ dispatch, user, home }){
                 </div>
                 
                 {/* 气电比 改为渐变面积图 */}
-                <div className={IndexStyle['card-container']} style={{ height:'21%', backgroundColor:'transparent', overflow:'hidden' }}>
-                    <div className={IndexStyle['card-title']} style={{ color:'#fff', fontWeight:'normal' }}><div>近7日气电比<span className={IndexStyle['sub-text']} style={{ color:'rgba(255, 255, 255, 0.6)'}}>(kwh/m³)</span></div></div>
-                    <div className={IndexStyle['card-content']} style={{ padding:'0' }}>
-                        {
-                            loaded
-                            ?
-                            <AreaLineChart data={data.view.ratio} />
-                            :
-                            <Spin className={IndexStyle['spin']} />
-                        }
-                    </div>
-                </div>
+                <CustomTabs data={data.view ? data.view.ratio : {}} />
                 {/* 本周耗电量 */}
                 <div className={IndexStyle['card-container']} style={{ height:'21%', backgroundColor:'transparent', overflow:'hidden' }}>
                     <div className={IndexStyle['card-title']} style={{ color:'#fff', fontWeight:'normal' }}><div>近7日耗电量<span className={IndexStyle['sub-text']} style={{ color:'rgba(255, 255, 255, 0.6)'}}>(kwh)</span></div></div>

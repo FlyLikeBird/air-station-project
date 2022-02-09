@@ -10,10 +10,10 @@ const { RangePicker } = DatePicker;
 
 
 function CustomDatePicker({ dispatch, user, onDispatch, size, optionStyle, noToggle, noDay, noMonth, noYear }){
-    const { timeType, startDate, endDate } = user;
+    const { timeType, startDate, endDate, theme } = user;
     const inputRef = useRef();
     return (
-        <div className={style['container']}>
+        <div className={style['container'] + ' ' + ( theme === 'dark' ? style['dark'] : '')}>
             {
                 noToggle 
                 ?

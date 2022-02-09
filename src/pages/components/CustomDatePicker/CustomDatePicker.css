@@ -6,10 +6,12 @@
 .radio-container:global(.ant-radio-group) :global(.ant-radio-button-wrapper) {
     background:transparent;
     border:1px solid #0b6fb1;
-    color:#fff;
+    color:rgba(0, 0, 0, 0.8);
     margin-left:-1px;
 }
-
+.container.dark .radio-container:global(.ant-radio-group) :global(.ant-radio-button-wrapper) {
+    color:#fff;
+}
 .radio-container:global(.ant-radio-group) :global(.ant-radio-button-wrapper)::before {
     display:none;
 }
@@ -28,9 +30,15 @@
     height:24px;
 }
 .date-picker-container:global(.ant-picker) :global(.anticon){
-    color:#fff;
+    color:rgba(0, 0, 0, 0.8);
 }
 .date-picker-container:global(.ant-picker) :global(.ant-picker-input) > input {
+    color:rgba(0, 0, 0, 0.8);
+}
+.container.dark .date-picker-container:global(.ant-picker) :global(.anticon){
+    color:#fff;
+}
+.container.dark .date-picker-container:global(.ant-picker) :global(.ant-picker-input) > input {
     color:#fff;
 }
 /* 

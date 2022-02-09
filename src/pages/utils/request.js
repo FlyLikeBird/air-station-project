@@ -23,6 +23,7 @@ function checkStatus(response) {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options, otherProxy) {
+    console.log(config);
     let proxy = otherProxy || config.proxy;
     let finalURL = `http://${config.apiHost}${proxy}${url}`;
     return fetch(finalURL, options)

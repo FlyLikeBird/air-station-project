@@ -80,7 +80,7 @@ function AlarmList({ dispatch, user, alarm }){
                 rowKey='record_id'
                 columns={columns}
                 dataSource={list}
-                className={style['self-table-container'] + ' ' + style['dark'] }
+                className={style['self-table-container'] + ' ' + ( user.theme === 'dark' ? style['dark'] : '') }
                 pagination={{
                     current:currentPage,
                     total,

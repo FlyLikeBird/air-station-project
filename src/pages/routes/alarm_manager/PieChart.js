@@ -53,7 +53,7 @@ let stylesMap = {
     },
 } 
 
-function PieChart({ data, title }){
+function PieChart({ data, title, theme }){
     let seriesData = [];
     let num = 0;
     Object.keys(data).forEach(key=>{
@@ -101,7 +101,7 @@ function PieChart({ data, title }){
                                 fontSize: 16,
                                 fontWeight:'bold',
                                 lineHeight: 24,
-                                color:'#fff',
+                                color: theme === 'dark' ? '#fff' : 'rgba(0, 0, 0, 0.8)',
                                 paddding:[0,4,0,0]
                             }
                         }
@@ -125,7 +125,7 @@ function PieChart({ data, title }){
                             name:item.name,
                             itemStyle:{
                                 borderWidth:6,
-                                borderColor:'#191a2f',
+                                borderColor: theme === 'dark' ? '#191a2f' : '#fff',
                                 color:stylesMap[index+1]
                             }
                         }

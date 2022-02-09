@@ -8,7 +8,7 @@ import PageItem1 from './components/PageItem1';
 import PageItem2 from './components/PageItem2';
 import PageItem3 from './components/PageItem3';
 import PageItem4 from './components/PageItem4';
-import reportBg from '../../../../public/report_bg.png';
+import reportBg from '../../../../public/report_bg.jpg';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import Loading from '@/pages/components/Loading';

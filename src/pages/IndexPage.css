@@ -1,7 +1,10 @@
 html,body {
     font-size:14px;
 }
-
+@font-face {
+    font-family: "selfFont";
+    src:url('../../public/Quartz Regular.ttf');
+} 
 @media (max-width:1440px){
     html, body{
         font-size:10px;
@@ -389,9 +392,11 @@ html,body {
     color:#191932;
 }
 .container .custom-tree:global(.ant-tree) :global(.ant-tree-treenode):global(.ant-tree-treenode-disabled) :global(.ant-tree-node-content-wrapper){
+    color:rgba(0, 0, 0, 0.8) !important;
+}
+.container.dark .custom-tree:global(.ant-tree) :global(.ant-tree-treenode):global(.ant-tree-treenode-disabled) :global(.ant-tree-node-content-wrapper){
     color:#fff !important;
 }
-
 .container .custom-tree:global(.ant-tree) :global(.ant-tree-treenode):global(.selected-parent) :global(.ant-tree-node-content-wrapper){
     background-color:rgba(108,108,108,0.5) !important;
     color:#fff !important;
@@ -439,16 +444,20 @@ html,body {
     padding-bottom:1rem;
     padding-right:1rem;
 }
-
 .card-container {
     height:100%;
-    background-color:#191932;
+    background-color:#fff;
     border-radius:4px;
     position:relative;
     color:rgba(0,0,0,.65);
     box-shadow:0 4px 6px -4px #0000001f, 0 6px 10px #00000014;
     overflow-x:hidden;
     overflow-y:auto;
+}
+.container.dark .card-container {
+    background-color:#191932;
+    color:rgba(0,0,0,.65);
+    box-shadow:0 4px 6px -4px #0000001f, 0 6px 10px #00000014;
 }
 .card-container.topRadius {
     border-radius:0;
@@ -464,16 +473,19 @@ html,body {
     height:2.4rem;
     line-height:2.4rem;
     font-size:1rem;
-    color:#fff;
     font-weight:bold;
     padding:0 1rem;
     display:flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom:1px solid #272748;
+    color:rgba(0, 0, 0, 0.8);
+    border-bottom:1px solid #ddd;
     white-space:nowrap;
 }
-
+.container.dark .card-container .card-title {
+    color:#fff;
+    border-bottom:1px solid #272748;
+}
 .card-container .card-content {
     height:calc( 100% - 2.4rem);
     padding:1rem;
@@ -511,13 +523,7 @@ html,body {
 .card-container::-webkit-scrollbar-track, .scroll-container::-webkit-scrollbar-corner {
     background:rgba(255,255,255,0.1);
 }
-.card-container {
-    background-color:#191a2f;
-    color:#b0b0b0;
-}
-.card-title {
-    border-bottom:1px solid #2c2d40;
-}
+
 /* 
     自定义Radio组件样式
 */
@@ -711,12 +717,15 @@ html,body {
 } */
 
 .custom-modal:global(.ant-modal) :global(.ant-modal-content) {
-    background-color:#193e6f;
-    color:#fff;
     height:100%;
+    background-color:#f1f1f1;
 }
 .custom-modal:global(.ant-modal) :global(.ant-modal-content) :global(.ant-modal-body) {
     height:100%;
+}
+.custom-modal.dark:global(.ant-modal) :global(.ant-modal-content){
+    background-color:#193e6f;
+    color:#fff;
 }
 .custom-modal:global(.ant-modal) :global(.ant-modal-content) > :global(.ant-modal-header) {
     background-color:#0693e5;
@@ -730,9 +739,15 @@ html,body {
 }
 
 .custom-modal:global(.ant-modal) :global(.ant-modal-content) :global(.ant-modal-close-x) {
-    color:#fff;
+    color:rgba(0, 0, 0, 0.8);
 }
 .custom-modal:global(.ant-modal) :global(.ant-modal-body) :global(.ant-form-item) :global(.ant-form-item-label) > label {
+    color:rgba(0, 0, 0, 0.8);
+}
+.custom-modal.dark:global(.ant-modal) :global(.ant-modal-content) :global(.ant-modal-close-x) {
+    color:#fff;
+}
+.custom-modal.dark:global(.ant-modal) :global(.ant-modal-body) :global(.ant-form-item) :global(.ant-form-item-label) > label {
     color:#fff;
 }
 /* 自定义切换button样式 */
@@ -788,10 +803,13 @@ html,body {
 
 .float-menu-container :global(.ant-menu){
     border-right:none;
-    background-color:#191932;
+    background-color:#fff;
     padding-top:10px;
 }
+.container.dark .float-menu-container :global(.ant-menu){
+    background-color:#191932;
 
+}
 .float-menu-container :global(.ant-menu-item){
     color:#80808e;
     font-size:1rem;
@@ -802,6 +820,11 @@ html,body {
 }
 
 .float-menu-container :global(.ant-menu-item):global(.ant-menu-item-active), .float-menu-container :global(.ant-menu-item):global(.ant-menu-item-selected){
+    background-color:#efefef !important;
+    color:#1890ff;
+    font-weight:bold;
+}
+.container.dark .float-menu-container :global(.ant-menu-item):global(.ant-menu-item-active) , .container.dark .float-menu-container :global(.ant-menu-item):global(.ant-menu-item-selected){
     background-color:#303046 !important;
     color:#1890ff;
     font-weight:bold;
@@ -814,9 +837,9 @@ html,body {
     justify-content: space-around;
     align-items: center;
     height:100%;
-    color:rgba(0, 0, 0, 0.65);
-    
+    color:rgba(0, 0, 0, 0.8);
 } 
+
 .flex-container.dark {
     color:#fff;
 }
@@ -845,12 +868,13 @@ html,body {
 }
 .flex-container .flex-item .flex-item-content {
     height:calc( 100% - 2rem);
-    background-color:#f6f7fb;
+    background-color:#fff;
     padding:0.5rem 1rem;
 }
 .flex-container.dark .flex-item .flex-item-content {
     background-color:#183d6d;
 }
+
 .flex-container .flex-item .flex-item-symbol {
     width:6px;
     height:6px;
@@ -879,6 +903,14 @@ html,body {
     font-size: 1.4rem;
     color: #323238;
     font-weight: bold;
+}
+.data.spec {
+    font-family:selfFont;
+    font-size: 3rem;
+    font-weight:normal;
+    line-height: 2.4rem;
+    letter-spacing: 0.4rem;
+    text-shadow: #53535e 5px 2px 0px;
 }
 .text {
     font-size:1rem;
@@ -972,16 +1004,18 @@ html,body {
     display:flex;
     align-items: center;
     justify-content: space-between;
-    color:rgba(0, 0, 0, 0.65);
+    color:rgba(0, 0, 0, 0.8);
     font-size:1rem;
     padding:6px 14px;
     margin:4px 0;
     border-radius: 6px;
     cursor: pointer;
+    border:1px solid #ddd;
+}
+.container.dark .list-container .list-item {
     border:1px solid #fff;
     color:#fff;
 }
-
 .list-container.inline .list-item {
     display:inline-block;
     width:50%;
@@ -989,14 +1023,16 @@ html,body {
 }
 
 .list-container .list-item:hover {
+    background-color:#ddd;
+}
+.container.dark .list-container .list-item:hover {
     background-color:#33335d;
     color:#fff;
 }
-
 .list-container .list-item.selected {
     background-color:#1b8ffe;
-    border:1px solid transparent;
-
+    border:1px solid transparent !important;
+    color:#fff;
 }
 
 /* 自定义Button组件样式 */

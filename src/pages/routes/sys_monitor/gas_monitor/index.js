@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'dva';
-import { Tabs, Skeleton, Spin } from 'antd';
+import { Tabs, Skeleton, Modal, Input, Spin, message } from 'antd';
 import LineChart from './LineChart';
 import CustomDatePicker from '@/pages/components/CustomDatePicker';
 import style from '@/pages/IndexPage.css';
@@ -8,7 +8,9 @@ const { TabPane } = Tabs;
 
 let tabList = [
     { tab:'瞬时流量', key:'1', unit:'m³/min' },
-    { tab:'压力', key:'2', unit:'bar' }
+    { tab:'压力', key:'2', unit:'bar' },
+    { tab:'气电比', key:'3', unit:'kwh/m³'},
+    { tab:'比功率', key:'4', unit:'m³/kwh' }
 ];
 function GasMonitor({ dispatch, user, gasMonitor }){
     useEffect(()=>{
@@ -20,14 +22,20 @@ function GasMonitor({ dispatch, user, gasMonitor }){
         return ()=>{
             dispatch({ type:'gasMonitor/reset'});
         }
-    },[])
+    },[]);
+   
     let { gasInfo, chartInfo, chartLoading, dataType } = gasMonitor;
+    let [visible, setVisible] = useState(false);
+    let [value, setValue] = useState('');
+    useEffect(()=>{
+        setValue(chartInfo.minPressure);
+    },[chartInfo])
     return (
         <div style={{ height:'100%'}}>
             {
                 Object.keys(gasInfo).length 
                 ?
-                <div className={style['flex-container'] + ' ' + style['dark']} style={{ height:'24%', paddingBottom:'1rem' }}>
+                <div className={style['flex-container'] + ' ' + ( user.theme === 'dark' ? style['dark'] : '' )} style={{ height:'24%', paddingBottom:'1rem' }}>
                 {
                     gasInfo.infoList && gasInfo.infoList.length
                     ?
@@ -95,7 +103,7 @@ function GasMonitor({ dispatch, user, gasMonitor }){
                                     ?
                                     null
                                     :
-                                    <LineChart info={item} data={chartInfo} theme='dark' />
+                                    <LineChart info={item} data={chartInfo} theme={user.theme} onVisible={value=>setVisible(value)} timeType={user.timeType} />
                                 }
                                    
                             </TabPane>
@@ -103,6 +111,28 @@ function GasMonitor({ dispatch, user, gasMonitor }){
                         ))
                     }                    
                 </Tabs>
+                <Modal
+                    visible={visible}
+                    onCancel={()=>setVisible(false)}
+                    closable={false}
+                    onOk={()=>{
+                        if ( value && +value >= 0 ){
+                            new Promise((resolve, reject)=>{
+                                dispatch({ type:'gasMonitor/setPressure', payload:{ resolve, reject, warning_min:value }});
+                            })
+                            .then(()=>{
+                                setVisible(false);
+                            })
+                            .catch(msg=>message.error(msg))
+                        } else {
+                            message.info('请输入合适的值');
+                        }
+                    }}
+                    okText='确定'
+                    cancelText='取消'
+                >
+                    <Input addonBefore="总管压力最小阈值" addonAfter="bar" value={value} onChange={e=>setValue(e.target.value)} />
+                </Modal>
             </div>
         </div>
     )

@@ -1,6 +1,7 @@
 import { 
     getGasEffInfo,
     getGasEffChart,
+    setMinPressure,
     getEleInfo,
     getEleChart
 } from '../services/gasMonitorService';
@@ -45,12 +46,24 @@ export default {
                 yield put({ type:'getGasEffInfo', payload:{ data:data.data, type }});
             }
         },
+        *setPressure(action, { put, select, call }){
+            let { gasMach:{ currentNode }} = yield select();
+            let { warning_min, resolve, reject } = action.payload || {};
+            warning_min = warning_min || 0;
+            let { data } = yield call(setMinPressure, { device_id:currentNode.device_id, warning_min });
+            if ( data && data.code === '0'){
+                yield put({ type:'fetchGasChart'});
+                if ( resolve && typeof resolve === 'function') resolve();
+            } else {
+                if ( reject && typeof reject === 'function' ) reject(data.msg);
+            } 
+        },
         *fetchGasChart(action, { put, select, call }){
             let { user:{ company_id, timeType, startDate, endDate }, gasMach:{ currentNode }, gasMonitor:{ dataType }} = yield select();
             yield put({ type:'toggleChartLoading'});
-            let { data } = yield call(getGasEffChart, { company_id, device_id:currentNode.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType, type:dataType });
+            let { data } = yield call(getGasEffChart, { company_id, device_id:currentNode.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType, type:dataType === '4' ? '3' : dataType });
             if ( data && data.code === '0'){
-                yield put({ type:'getGasChart', payload:{ data:data.data }});
+                yield put({ type:'getGasChart', payload:{ data:data.data, dataType, type:'gas' }});
             }
         },
         *fetchEleInfo(action, { put, select, call }){
@@ -77,7 +90,7 @@ export default {
         getGasEffInfo(state, { payload:{ data, type }}){
             let infoList = [];
             if ( type === 'gas'){
-                infoList.push({ title:'本月气电比', child:[{ title:'气电比', value:data.month_gas_ele_ratio , unit:'kwh/m³' }]});
+                infoList.push({ title:'本月气电比', child:[{ title:'气电比', value:data.month_gas_ele_ratio , unit:'kwh/m³' }, { title:'比功率', value:data.month_gas_ele_ratio ? (1/data.month_gas_ele_ratio).toFixed(2) : 0, unit:'m³/kwh' }]});
                 infoList.push({ title:'产气量', child:[{ title:'今日产气量', value:data.gas.day , unit:'m³'}, { title:'本月产气量', value:data.gas.month , unit:'m³'}]});
                 infoList.push({ title:'用电量', child:[{ title:'今日用电量', value:data.energy.day , unit:'kwh'}, { title:'本月用电量', value:data.energy.month , unit:'kwh' }, { title:'本年用电量', value:data.energy.year , unit:'kwh' }]})
                 infoList.push({ title:'稼动效率', child:[{ title:'设备稼动率', value:data.run_ratio, unit:'%' }]});
@@ -95,7 +108,12 @@ export default {
         setDataType(state, { payload }){
             return { ...state, dataType:payload };
         },
-        getGasChart(state, { payload:{ data }}){
+        getGasChart(state, { payload:{ data, dataType, type }}){
+            if ( dataType === '4' && type === 'gas') {
+                data.value = data.value.map((item,index)=>{
+                    return item === null ? null : item ? (1/item).toFixed(2) : 0 ;
+                })
+            }
             return { ...state, chartInfo:data, chartLoading:false };
         },
         reset(state){

@@ -104,7 +104,7 @@ function AlarmSetting({ dispatch, user, alarm, menu }){
                     } */}
                     
                     <Table
-                        className={style['self-table-container'] + ' ' + style['dark'] }
+                        className={style['self-table-container'] + ' ' + ( user.theme === 'dark' ? style['dark'] : '') }
                         columns={columns}
                         dataSource={ruleList}
                         locale={{emptyText:'还没有设置规则'}}

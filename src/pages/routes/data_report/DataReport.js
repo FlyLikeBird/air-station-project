@@ -91,6 +91,7 @@ function DataReport({ dispatch, user, gasMach, dataReport }){
                         timeType={user.timeType}
                         startDate={user.startDate}
                         endDate={user.endDate}
+                        theme={user.theme}
                     /> 
                 </div>
                 : null

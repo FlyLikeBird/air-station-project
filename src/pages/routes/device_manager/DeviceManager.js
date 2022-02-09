@@ -72,7 +72,6 @@ function DeviceManager({ dispatch, user, device }){
         }
     ];
     return (
-        <div className={IndexStyle['page-container']}>
             <div className={IndexStyle['card-container']}>
                 {
                     isLoading
@@ -89,7 +88,7 @@ function DeviceManager({ dispatch, user, device }){
                         rowKey='device_id'
                         columns={columns}
                         dataSource={list}
-                        className={IndexStyle['self-table-container'] + ' ' + IndexStyle['dark'] + ' ' + IndexStyle['noSpace']}
+                        className={IndexStyle['self-table-container'] + ' ' + ( user.theme === 'dark' ? IndexStyle['dark'] : '' ) + ' ' + IndexStyle['noSpace']}
                         pagination={{
                             current:currentPage,
                             total,
@@ -123,7 +122,6 @@ function DeviceManager({ dispatch, user, device }){
                     />
                 </Modal>
             </div>
-        </div>
     )
 }
 

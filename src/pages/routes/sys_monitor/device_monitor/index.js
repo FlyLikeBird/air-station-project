@@ -15,7 +15,7 @@ function DeviceMonitor({ dispatch, user, device }){
     let { deviceInfoList, deviceTypes, currentType, isLoading, currentPage, total, detailInfo, detailLoading } = device;
     let pagesize = user.containerWidth <= 1440 ? 9 : 12;
     return (
-        <div className={style['inline-container'] + ' ' + style['dark']}>
+        <div className={style['inline-container'] + ' ' + ( user.theme === 'dark' ? style['dark'] : '')}>
             {
                 isLoading 
                 ?
@@ -128,7 +128,7 @@ function DeviceMonitor({ dispatch, user, device }){
             <Modal 
                 visible={info.visible}
                 footer={null}
-                className={IndexStyle['custom-modal']}
+                className={IndexStyle['custom-modal'] + ' ' + ( user.theme === 'dark' ? IndexStyle['dark'] : '')}
                 width='80vw'
                 height='80vh'
                 destroyOnClose={true}
@@ -142,6 +142,7 @@ function DeviceMonitor({ dispatch, user, device }){
                     info={info}
                     data={detailInfo}
                     isLoading={detailLoading}
+                    theme={user.theme}
                 />
                 
             </Modal>

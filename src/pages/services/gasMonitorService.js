@@ -26,6 +26,19 @@ export function getGasEffChart(data = {}){
         body:str
         }); 
 }
+
+export function setMinPressure(data = {}){
+    data.token = apiToken();
+    let str = translateObj(data);
+    return request('/gas/setminpressure', { 
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:str
+        }); 
+}
+
 export function getEleInfo(data = {}){
     data.token = apiToken();
     let str = translateObj(data);

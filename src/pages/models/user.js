@@ -7,7 +7,7 @@ import { md5, encryptBy, decryptBy } from '../utils/encryption';
 import moment from 'moment';
 
 const reg = /\/info_manage_menu\/manual_input\/([^\/]+)\/(\d+)/;
-const companyReg = /\?companyId=(\d*)/;
+const companyReg =  /\?pid\=0\.\d+&&userId=(\d+)&&companyId=(\d+)/;
 const agentReg = /\?agent=(.*)/;
 const agentReg2 = /acs-(.*)/;
 let energyList = [
@@ -18,14 +18,15 @@ let energyList = [
 let date = new Date();
 
 // 初始化socket对象，并且添加监听事件
-function createWebSocket(url, data, companyId, dispatch){
+function createWebSocket(url, data, companyId, fromAgent, dispatch){
     let ws = new WebSocket(url);
     // console.log(data);
     ws.onopen = function(){
-        if ( data.agent_id){
+        if ( data.agent_id && !fromAgent ){
             ws.send(`agent:${data.agent_id}`);
+        } else {
+            ws.send(`com:${companyId}`);
         }
-        ws.send(`com:${companyId}`);
     };
     // ws.onclose = function(){
     //     console.log('socket close...');
@@ -121,7 +122,7 @@ export default {
                 }
                 if ( pathname !== '/login') {
                     new Promise((resolve, reject)=>{
-                        dispatch({type:'userAuth', payload: { dispatch, query:location.search, userid:location.query.userid, resolve, pathname }})
+                        dispatch({type:'userAuth', payload: { dispatch, query:location.search, resolve, pathname }})
                     })
                     .then(()=>{
                         dispatch({type:'setRoutePath', payload:{ pathname }});    
@@ -143,19 +144,13 @@ export default {
                 // }
                 if ( !authorized ){
                     // 判断是否是服务商用户新开的公司标签页
-                    let apiHost = '120.25.168.203';     
                     let matchResult = companyReg.exec(query);
-                    let companysMap = JSON.parse(localStorage.getItem('companysMap'));
-                    let defaultCompany, defaultCompanyId;
-                    if ( companysMap && companysMap.length ){
-                        defaultCompany = companysMap[0];
-                        defaultCompanyId = defaultCompany[Object.keys(defaultCompany)[0]];
+                    let company_id = matchResult ? matchResult[2] : null;
+                    let user_id = matchResult ? matchResult[1] : null;
+                    if ( user_id ){
+                        localStorage.setItem('user_id', user_id);
                     }
-                    let company_id = matchResult ? matchResult[1] : defaultCompanyId;
-                    if ( userid ){
-                        localStorage.setItem('user_id', userid);       
-                    }
-                    let { data } = yield call( matchResult ? agentUserAuth : userAuth, { app_type:'3'});
+                    let { data } = yield call( matchResult ? agentUserAuth : userAuth, matchResult ? { app_type:3, company_id } : { app_type:3 } );
                     if ( data && data.code === '0' ){
                         // 先判断是否是第三方代理商账户
                         if ( !Object.keys(thirdAgent).length ) {
@@ -173,7 +168,9 @@ export default {
                             window.alert('当前浏览器不支持websocket,推荐使用chrome浏览器');
                             return ;
                         }
-                        socket = createWebSocket(`ws://${apiHost}:${config.socketPort}`, data.data, company_id, dispatch);
+                        let config = window.g;
+                        let socketCompanyId = company_id ? company_id : data.data.companys.length ? data.data.companys[0].company_id : null ;
+                        socket = createWebSocket(`ws://${config.socketHost}:${config.socketPort}`, data.data, socketCompanyId, matchResult ? true : false, dispatch);
                     } else {
                         // 登录状态过期，跳转到登录页重新登录(特殊账号跳转到特殊登录页)
                         yield put({ type:'loginOut'});

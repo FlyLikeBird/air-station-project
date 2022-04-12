@@ -1,9 +1,8 @@
 import { 
-    getDeviceTree
+    getDeviceTree,
+    getPlanList, getPlanDetail, getPlanMachs, addPlan, updatePlan, delPlan, pushPlan
 } from '../services/gasMachService';
 import { getAirMachData } from '../services/stationService';
-import moment from 'moment';
-import { apiToken, encryptBy } from '@/pages/utils/encryption';
 const date = new Date();
 const initialState = {
     machTree:[],
@@ -11,7 +10,14 @@ const initialState = {
     currentMach:{},
     treeLoading:true,
     //空压机列表的气压数据
-    airMachStatus:[]
+    airMachStatus:[],
+    // 系统控制-控制方案/记录相关状态
+    isLoading:true,
+    currentPage:1,
+    total:0,
+    planList:[],
+    planMachs:[],
+    planDetail:{}
 };
 
 export default {
@@ -61,9 +67,68 @@ export default {
             if ( data && data.length ){
                 yield put({ type:'getAirMachStatus', payload:{ airMachStatus:temp }})
             }
+        },
+        *fetchPlanList(action, { call, select, put }){
+            let { user:{ company_id }} = yield select();
+            let { currentPage } = action.payload || {};
+            currentPage = currentPage || 1;
+            yield put({ type:'toggleLoading'});
+            let { data } = yield call(getPlanList, { company_id, page:currentPage, page_size:14 });
+            if ( data && data.code === '0'){
+                yield put({ type:'getPlanListResult', payload:{ data:data.data, currentPage, total:data.count }});
+            }
+        },
+        *fetchPlanMachs(action, { call, select, put }){
+            let { user:{ company_id }} = yield select();
+            let { data } = yield call(getPlanMachs, { company_id });
+            if ( data && data.code === '0'){
+                yield put({ type:'getPlanMachsResult', payload:{ data:data.data }});
+            }
+        },
+        *fetchPlanDetail(action, { call, select, put }){
+            let { plan_id } = action.payload || {};
+            let { data } = yield call(getPlanDetail, { plan_id });
+            if ( data && data.code === '0'){
+                yield put({ type:'getPlanDetailResult', payload:{ data:data.data }});
+            }
+        },
+        *addPlanAsync(action, { call, select, put}){
+            let { user:{ company_id }} = yield select();
+            let { values, resolve, reject, forEdit } = action.payload || {};
+            values.company_id = company_id;
+            let { data } = yield call(forEdit ? updatePlan : addPlan, values);
+            if ( data && data.code === '0'){
+                yield put({ type:'fetchPlanList'});
+                if ( resolve ) resolve();
+            } else {
+                if ( reject ) reject(data.msg);
+            }
+        },
+        *pushPlanAsync(action, { call, select, put }){
+            let { plan_id, resolve, reject } = action.payload || {};
+            let { data } = yield call(pushPlan, { plan_id });
+            if ( data && data.code === '0' ){
+                yield put({ type:'fetchPlanList'});
+                if ( resolve ) resolve();
+            } else {
+                if ( reject ) reject(data.msg);
+            }
+        },
+        *delPlanAsync(action, { call, select, put }){
+            let { plan_id, resolve, reject } = action.payload || {};
+            let { data } = yield call(delPlan, { plan_id });
+            if ( data && data.code === '0' ){
+                yield put({ type:'fetchPlanList'});
+                if ( resolve ) resolve();
+            } else {
+                if ( reject ) reject(data.msg);
+            }
         }
     },
     reducers:{
+        toggleLoading(state){
+            return { ...state, isLoading:true };
+        },
         toggleTreeLoading(state, { payload }){
             return { ...state, treeLoading:true };
         },
@@ -121,6 +186,15 @@ export default {
         },
         getAirMachStatus(state, { payload:{ airMachStatus }}){
             return { ...state, airMachStatus }
+        },
+        getPlanListResult(state, { payload:{ data, currentPage, total }}){
+            return { ...state, planList:data, currentPage, total, isLoading:false };
+        },
+        getPlanMachsResult(state, { payload:{ data }}){
+            return { ...state, planMachs:data };
+        },
+        getPlanDetailResult(state, { payload:{ data }}){
+            return { ...state, planDetail:data };
         },
         reset(state){
             return initialState;

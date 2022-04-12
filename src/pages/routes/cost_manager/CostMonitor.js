@@ -56,7 +56,11 @@ function CostMonitor({ dispatch, user, gasMach, device }){
                             treeData={machTree}
                             onSelect={(selectedKeys, {node})=>{  
                                 dispatch({ type:'gasMach/toggleNode', payload:node });
-                                            
+                                if ( subMenu['menu_code'] === 'cost_monitor_info' ) {
+                                    dispatch({ type:'cost/fetchCostInfo' });
+                                    dispatch({ type:'cost/fetchCostChart'});
+                                } else if ( subMenu['menu_code'] === 'cost_monitor_save' ) {
+                                }         
                             }}
                         />
                     }

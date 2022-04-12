@@ -9,6 +9,7 @@ import BarChart from './BarChart';
 
 function PageItem3({ title, data, text, maxDay, isLoading }){
     let loaded = Object.keys(data).length ? true : false;
+    console.log(maxDay);
     const content = (
         <div style={{ height:'100%' }}>
             {
@@ -44,7 +45,7 @@ function PageItem3({ title, data, text, maxDay, isLoading }){
                         {
                             loaded
                             ?
-                            <LineChart xData={data.date} yData={data.speed} unit='m³/min' theme='dark' maxDay={maxDay} />
+                            <LineChart xData={data.date} yData={data.speed} unit='m³/min' theme='dark' />
                             :
                             <Spin className={IndexStyle['spin']} />
                         }
@@ -61,7 +62,7 @@ function PageItem3({ title, data, text, maxDay, isLoading }){
                         {
                             loaded
                             ?
-                            <LineChart xData={data.date} yData={data.pressure} maxDay={maxDay} unit='bar' theme='dark' />
+                            <LineChart xData={data.date} yData={data.pressure} unit='bar' theme='dark' />
                             :
                             <Spin className={IndexStyle['spin']} />
                         }

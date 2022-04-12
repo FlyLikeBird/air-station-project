@@ -12,11 +12,6 @@ export default {
     namespace:'cost',
     state:initialState,
     effects:{
-        *init(action, { select, call, put, all }){
-            // yield put.resolve({ type:'fields/init'});
-            yield put({ type:'fetchEleBilling'});
-            yield put({ type:'fetchBillingTpl'});
-        },
         *init(action, { put }){
             yield put.resolve({ type:'gasMach/init'});
             yield put({ type:'fetchCostInfo'});

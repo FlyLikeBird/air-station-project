@@ -1,12 +1,8 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
-function LineChart({ xData, yData, maxDay, unit, theme }){
+function LineChart({ xData, yData, unit, theme }){
     let textColor = theme === 'dark' ? '#b0b0b0' : '#000';
     let seriesData = [];
-    let cagetoryData = [];
-    for(var i = 1;i <= maxDay;i++){
-        cagetoryData.push(i);
-    }
     seriesData.push({
         type:'line',
         // name:key,
@@ -63,17 +59,18 @@ function LineChart({ xData, yData, maxDay, unit, theme }){
                     data:xData,
                     axisLine:{ show:false },
                     axisTick:{ show:false },
-                    
                     axisLabel:{
                         color:textColor,
-                        align:'left',
+                        interval:0,
                         formatter:(value, index)=>{
-                            if ( index === 0 ){
-                                return cagetoryData.join('    ');
+                            if ( index % 24 === 0 ){
+                                // console.log(index);
+                                let temp1 = value.split(' ')[0];
+                                let temp2 = temp1 ? temp1.split('-')[2] : '';
+                                return temp2;
                             } else {
                                 return null
                             }
-            
                         }
                     }
                 },

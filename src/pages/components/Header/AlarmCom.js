@@ -55,7 +55,7 @@ function AlarmCom({ msg }){
             }} />
             <Popover color='#1d1e32' content={<div style={{ width:'500px'}}><ScrollTable scrollNum={5} thead={thead} data={ msg.detail || []} /></div>}>
                 <Badge count={msg.count} onClick={()=>{
-                    history.push('/gas_warning');
+                    history.push('/gas_warning' + (window.location.search || ''));
                 }} />
             </Popover>
             {/* <video id='my-audio' src={AlarmSound} muted={true} autoPlay={true} loop={true} style={{ position:'absolute', left:'100%' }}></video> */}

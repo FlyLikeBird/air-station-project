@@ -4,9 +4,11 @@ import { Tree, Spin, Menu, message } from 'antd';
 import style from '@/pages/IndexPage.css';
 import ColumnCollapse from '@/pages/components/ColumnCollapse';
 import AutoControlManager from './AutoControlManager';
+import PlanManager from './PlanManager';
 
 let subMenuMaps = {
-    'gas_mach_oper':AutoControlManager
+    'gas_mach_oper':AutoControlManager,
+    'gas_control_plan':PlanManager
 };
 
 function SysControl({ dispatch, user, gasMach }){
@@ -66,9 +68,6 @@ function SysControl({ dispatch, user, gasMach }){
                     </div>
                 </div>
             </div>
-                
-            
-            
         </div>
         
     );

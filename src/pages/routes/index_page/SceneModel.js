@@ -194,7 +194,6 @@ function SceneMonitor({ dispatch, currentCompany, currentScene, sceneIndex }){
             if ( intersects.length ){
                 isEmpty = false;
                 target = group.children[0].children[0].children.filter(i=>i.uuid === intersects[0].object.parent.uuid )[0];            
-                console.log(target.name);
                 // 判断target.centerPos是防止初始化还没加载好就生成信息模型而报错
                 if ( target  && prevTarget !== target && target.centerPos ){
                     // 清除前一次生成的信息模块
@@ -205,12 +204,9 @@ function SceneMonitor({ dispatch, currentCompany, currentScene, sceneIndex }){
                     infoMesh = group.children.filter(i=>i.name === 'info')[0];
                     if ( !infoMesh ) {
                         // 查空压机相关数据
-                        console.log('a');
                         if ( airMachMaps[target.name] ){
                             // 查空压机关联的电表数据
-                            console.log('b');
                             if ( eleMachMaps[target.name] ) {
-                                console.log('c');
                                 Promise.all([
                                     new Promise((resolve, reject)=>{
                                         dispatch({ type:'home/fetchAirMachData', payload:{ mach_type:'gas', register_code:airMachMaps[target.name], resolve, reject }})
@@ -221,6 +217,7 @@ function SceneMonitor({ dispatch, currentCompany, currentScene, sceneIndex }){
                                 ])
                                 .then(([airData, eleData])=>{
                                     airData.ele = eleData.Iavb;
+                                    console.log(target);
                                     group.add(createInfoMesh( target, false, airData, isBack, 'gas'));
                                     render();
                                 })

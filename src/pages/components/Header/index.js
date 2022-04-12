@@ -45,7 +45,7 @@ function cancelFullScreen(el ){
 
 function Header({ dispatch, user }){
     const containerRef = useRef();
-    const { currentMenu, userMenu, msg, userInfo, currentCompany, thirdAgent, fullscreen } = user;
+    const { currentMenu, userMenu, msg, userInfo, currentCompany, thirdAgent, fromAgent, fullscreen } = user;
     useEffect(()=>{
         if ( containerRef.current ){
             dispatch({ type:'user/setContainerWidth', payload:containerRef.current.offsetWidth });
@@ -89,7 +89,7 @@ function Header({ dispatch, user }){
                 let temp = userMenu.filter(i=>i.menu_code === e.key )[0];
                 dispatch({ type:'user/toggleCurrentMenu', payload:temp });
                 let targetURL = e.key === '/' ? '' : e.key;
-                history.push('/' + targetURL );
+                history.push('/' + targetURL + ( window.location.search || '') );
             }}>
                 {             
                     userMenu.map((item,index)=>(
@@ -120,13 +120,13 @@ function Header({ dispatch, user }){
                 <WeatherCom />
                 <div style={{ display:'inline-flex', alignItems:'center', marginRight:'6px' }}>
                     <div style={{ width:'24px', height:'24px', borderRadius:'50%', backgroundColor:'#8888ac', backgroundRepeat:'no-repeat', backgroundSize:'cover', backgroundImage:`url(${avatarBg})`}}></div>
-                    <div>{ currentCompany.company_name || '--' }</div>
+                    <div>{ userInfo.user_name || '--' }</div>
                     {/* <Tag color="blue">{ userInfo.role_name }</Tag> */}
                 </div>
-                <div style={{ cursor:'pointer', zIndex:'2' }} onClick={()=>{
-                    dispatch({ type:'user/loginOut'});
-                }}>
-                    <Tag color='#2db7f5'>退出</Tag>
+                <div style={{ cursor:'pointer', zIndex:'2' }}>                
+                    <Tag color='#2db7f5' onClick={()=>{
+                        dispatch({ type:'user/loginOut'});
+                    }}>退出</Tag>           
                 </div>
             </div>
         </div>

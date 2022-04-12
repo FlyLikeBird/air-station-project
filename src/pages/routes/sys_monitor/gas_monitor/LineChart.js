@@ -29,7 +29,6 @@ const richStyle = {
 
 
 function LineChart({ dispatch, startDate, timeType, onVisible, data, info, theme }){
-    console.log(theme);
     const seriesData = [];
     let textColor = theme === 'dark' ? '#b0b0b0' : '#000';
     let sortArr = data.value.concat().sort((a,b)=>b-a);

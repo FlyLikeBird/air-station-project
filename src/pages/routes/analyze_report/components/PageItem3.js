@@ -9,7 +9,6 @@ import BarChart from './BarChart';
 
 function PageItem3({ title, data, text, maxDay, isLoading }){
     let loaded = Object.keys(data).length ? true : false;
-    console.log(maxDay);
     const content = (
         <div style={{ height:'100%' }}>
             {

@@ -1,27 +1,22 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 
-let categoryData = [];
-for(var i=1;i<=15;i++){
-    let baseCost = Math.round(Math.random() * 5000);
-    categoryData.push({ date:i, baseCost, smartCost:baseCost - Math.round(Math.random() * 200) });
-}
-function BarChart({ data, timeType, dataType, theme }){
+function BarChart({ data, forReport, timeType }){
     let textColor = '#b0b0b0' ;
     let seriesData = [];
     seriesData.push({
         type:'bar',
-        barWidth:14,
+        barWidth: forReport ? 6 : 14,
         name:'基准成本',
-        itemStyle:{ color:'#af2bff' },
-        data:categoryData.map(i=>i.baseCost)
+        itemStyle:{ color: forReport ? '#1b8ffe' : '#af2bff' },
+        data:data.old_cost
     });
     seriesData.push({
         type:'bar',
-        barWidth:14,
+        barWidth:forReport ? 6 : 14,
         name:'智控成本',
-        itemStyle:{ color:'#04a3fe' },
-        data:categoryData.map(i=>i.smartCost)
+        itemStyle:{ color:forReport ? '#67de4a' : '#04a3fe' },
+        data:data.cost
     });
     return (
         <ReactEcharts
@@ -31,15 +26,14 @@ function BarChart({ data, timeType, dataType, theme }){
                 tooltip: { 
                     show:true, 
                     trigger:'axis',
+                    backgroundColor:'rgba(50, 50, 50, 0.8)',
                     formatter:(params)=>{
-                        let diff = params[0].data - params[1].data;
-                        let ratio = (diff / params[0].data).toFixed(1);
                         return `<div>
                         <div>${ params[0].axisValue }</div>
                         <div>${params[0].marker}${params[0].seriesName} : ${ params[0].data }元</div>
                         <div>${params[1].marker}${params[1].seriesName} : ${ params[1].data }元</div>
-                        <div style='padding-left:16px;'>节能成本 : ${diff}元</div>
-                        <div style='padding-left:16px;'>节能率 : ${ratio}%</div>
+                        <div style='padding-left:16px;'>节能成本 : ${data.save_cost[params[0].dataIndex]}元</div>
+                        <div style='padding-left:16px;'>节能率 : ${data.save_cost_ratio[params[0].dataIndex]}%</div>
                         </div>`;
                     }
                 },
@@ -52,7 +46,7 @@ function BarChart({ data, timeType, dataType, theme }){
                     }
                 },
                 grid:{
-                    top:90,
+                    top:60,
                     bottom:20,
                     left:20,
                     right:40,
@@ -63,7 +57,7 @@ function BarChart({ data, timeType, dataType, theme }){
                     name: timeType === '1' ? '时' : timeType === '2' ?  '日' : '月',
                     nameTextStyle:{ color:textColor },
                     type:'category',
-                    data:categoryData.map(i=>i.date),
+                    data:data.date,
                     axisLine:{ show:false },
                     axisTick:{ show:false },
                     axisLabel:{

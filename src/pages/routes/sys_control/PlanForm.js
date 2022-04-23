@@ -22,6 +22,11 @@ function checkInfoList(data){
     return result;
 }
 
+let statusComponents = {
+    1:{ text:'未下发', color:'#ccc', render:<InfoCircleFilled style={{ color:'#ccc', fontSize:'1.4rem' }} /> },
+    3:{ text:'下发成功', color:'#52c41a', render:<CheckCircleFilled style={{ color:'#52c41a', fontSize:'1.4rem' }} /> },
+    4:{ text:'下发失败', color:'#ff4d4f', render:<CloseCircleFilled style={{ color:'#ff4d4f', fontSize:'1.4rem' }} /> }
+}
 function PlanForm({ dispatch, planMachs, planDetail, info, onClose }){
     let [infoList, setInfoList] = useState([]);
     let [value, setValue] = useState('');
@@ -61,7 +66,7 @@ function PlanForm({ dispatch, planMachs, planDetail, info, onClose }){
                         <Input style={{ width:'200px', marginLeft:'4px' }} value={value} onChange={e=>setValue(e.target.value)} />
                     </div>
                     <Button type='primary' onClick={()=>{
-                        setInfoList(infoList.concat({ currentMach:null, currentAction:null }));
+                        setInfoList(infoList.concat({ currentMach:null, currentAction:{ status:1 } }));
                     }}>添加对象</Button>
                 </div>
                 
@@ -152,17 +157,19 @@ function PlanForm({ dispatch, planMachs, planDetail, info, onClose }){
                                         <div className={style['info-item']} style={{ width:otherWidth }}>
                                             <div className={style['info-content']} style={{ paddingLeft:'6px' }}>
                                                 {
-                                                    item.currentAction && item.currentAction.status === 3 
+                                                    item.currentAction && item.currentAction.status 
                                                     ?
-                                                    <CheckCircleFilled style={{ color:'#52c41a', fontSize:'1.4rem' }} />
+                                                    statusComponents[item.currentAction.status].render
                                                     :
-                                                    item.currentAction && item.currentAction.status === 4 
-                                                    ?
-                                                    <CloseCircleFilled style={{ color:'#ff4d4f', fontSize:'1.4rem' }} />
-                                                    :
-                                                    <InfoCircleFilled style={{ color:'#ccc', fontSize:'1.4rem' }} />
+                                                    null
                                                 }
-                                                
+                                                {
+                                                    item.currentAction && item.currentAction.status
+                                                    ?
+                                                    <span style={{ color:statusComponents[item.currentAction.status].color, fontSize:'0.8rem', marginLeft:'4px' }}>{ statusComponents[item.currentAction.status].text }</span>
+                                                    :
+                                                    null
+                                                }
                                             </div>
                                         </div>
                                         :

@@ -31,7 +31,7 @@ function getPromise(dispatch, action){
 }
 
 
-function AnalyzeReport({ dispatch, user, report }){
+function AnalyzeReport({ dispatch, user, report, cost }){
     let [finishLoading, setFinishLoading] = useState(false);
     let { currentCompany } = user;
     let { isLoading, reportInfo, currentDate } = report;
@@ -45,9 +45,14 @@ function AnalyzeReport({ dispatch, user, report }){
     },[]);
     useEffect(()=>{
         if ( user.authorized ){
-            new Promise((resolve, reject)=>{
-                dispatch({ type:'report/fetchReport', payload:{ resolve, reject }})
-            })
+            Promise.all([
+                new Promise((resolve, reject)=>{
+                    dispatch({ type:'report/fetchReport', payload:{ resolve, reject }})
+                }),
+                new Promise((resolve, reject)=>{
+                    dispatch({ type:'cost/initSaveCost', payload:{ resolve, reject }})
+                })
+            ])
             .then(()=>{
                 canDownload = true;
             })
@@ -104,7 +109,21 @@ function AnalyzeReport({ dispatch, user, report }){
                 <div style={{ color:'#fff' }}>当前月份:</div>
                 <DatePicker ref={inputRef} className={IndexStyle['custom-date-picker']} locale={zhCN} allowClear={false} picker='month' value={currentDate} onChange={value=>{
                     dispatch({ type:'report/setDate', payload:value });
-                    dispatch({ type:'report/fetchReport'});
+                    canDownload = false;
+                    Promise.all([
+                        new Promise((resolve, reject)=>{
+                            dispatch({ type:'report/fetchReport', payload:{ resolve, reject }})
+                        }),
+                        new Promise((resolve, reject)=>{
+                            dispatch({ type:'cost/fetchSaveCost', payload:{ resolve, reject }})
+                        })
+                    ])
+                    .then(()=>{
+                        canDownload = true;
+                    })
+                    .catch(err=>{
+                        console.log(err);
+                    });
                     if ( inputRef.current && inputRef.current.blur ) inputRef.current.blur();
                 }} />
             </div>
@@ -116,10 +135,10 @@ function AnalyzeReport({ dispatch, user, report }){
                 <PageItem1 title='本月总览' data={reportInfo.page1 || {}} text={reportInfo.text ? reportInfo.text.page1 : []} isLoading={isLoading} />
                 <PageItem2 title='功率分析' data={reportInfo.page2 || {}} text={reportInfo.text ? reportInfo.text.page2 : []} isLoading={isLoading} />
                 <PageItem3 title='瞬时流量与压力' data={reportInfo.page3 || {}} text={reportInfo.text ? reportInfo.text.page3 : []} isLoading={isLoading} maxDay={currentDate.endOf('month').toDate().getDate()} />
-                <PageItem4 title='节能情况' data={reportInfo.page4 || {}} isLoading={isLoading} />
+                <PageItem4 title='节能情况' data={reportInfo.page4 || {}} isLoading={isLoading} stationInfo={cost.saveCost} />
             </div>
         </div>
     )
 }
 
-export default connect(({ user, report })=>({ user, report }))(AnalyzeReport);
+export default connect(({ user, report, cost })=>({ user, report, cost }))(AnalyzeReport);

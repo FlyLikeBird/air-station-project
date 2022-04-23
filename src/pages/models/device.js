@@ -6,11 +6,19 @@ import {
     getBindMeter,
     getDeviceTypes,
     getDeviceInfoList,
-    getDeviceDetail
+    getDeviceDetail,
+    getStationInfo
 } from '../services/deviceService';
+import { getGasEffChart } from '../services/gasMonitorService';
 import moment from 'moment';
 import { apiToken, encryptBy } from '@/pages/utils/encryption';
 const date = new Date();
+let typesMap = {
+    'pressure':2,
+    'speed':1,
+    'flow':4,
+    'temp':5
+}
 const initialState = {
     isLoading:true,
     list:[],
@@ -18,8 +26,18 @@ const initialState = {
     total:0,
     // 绑定的采集器设备列表
     meterList:[],
-    deviceTypes:[],
-    currentType:{},
+    stationList:[],
+    currentStation:{},
+    stationInfoList:[
+        { title:'总管压力', key:'pressure', alue:0, unit:'bar' },
+        { title:'瞬时流量', key:'speed', value:0, unit:'m³/min' },
+        { title:'今日累计流量', key:'flow', value:0, unit:'m³'},
+        { title:'露点温度', key:'temp', value:0, unit:'℃' }
+    ],
+    pressureChartInfo:{},
+    speedChartInfo:{},
+    flowChartInfo:{},
+    tempChartInfo:{},
     deviceInfoList:[],
     detailInfo:{},
     detailLoading:true
@@ -81,6 +99,19 @@ export default {
         *initInfoList(action, { put }){
             yield put.resolve({ type:'fetchDeviceTypes'});
             yield put({ type:'fetchInfoList'});
+            yield put({ type:'fetchStationInfo'});
+            yield put({ type:'fetchStationChart', payload:{ type:'pressure'}});
+            yield put({ type:'fetchStationChart', payload:{ type:'speed'}});
+            yield put({ type:'fetchStationChart', payload:{ type:'flow'}});
+            yield put({ type:'fetchStationChart', payload:{ type:'temp'}});
+        },
+        *fetchStationChart(action, { put, select, call }){
+            let { type } = action.payload || {};
+            let { user:{ company_id, timeType, startDate, endDate }, device:{ currentStation }} = yield select();
+            let { data } = yield call(getGasEffChart, { company_id, device_id:currentStation.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType, type:typesMap[type] });
+            if ( data && data.code === '0'){
+                yield put({ type:'getStationChartResult', payload:{ data:data.data, type }});
+            }
         },
         *fetchDeviceTypes(action, { put, select, call}){
             let { user:{ company_id }} = yield select();
@@ -90,13 +121,20 @@ export default {
             }
         },
         *fetchInfoList(action, { put, select, call}){
-            let { user:{ company_id, containerWidth }, device:{ currentType }} = yield select();
+            let { user:{ company_id, containerWidth }, device:{ currentStation }} = yield select();
             let { currentPage } = action.payload || {};
             currentPage = currentPage || 1;
             yield put({ type:'toggleLoading'});
-            let { data } = yield call(getDeviceInfoList, { company_id, device_type:currentType.device_type, page:currentPage, pagesize: containerWidth <= 1440 ? 9 : 12 });
+            let { data } = yield call(getDeviceInfoList, { company_id, device_id:currentStation.device_id });
             if ( data && data.code === '0'){
                 yield put({ type:'getInfoList', payload:{ data:data.data, currentPage, total:data.count }});
+            }
+        },
+        *fetchStationInfo(action, { put, select, call }){
+            let { user:{ company_id }, device:{ currentStation }} = yield select();
+            let { data } = yield call(getStationInfo, { company_id, device_id:currentStation.device_id });
+            if ( data && data.code === '0'){
+                yield put({ type:'getStationResult', payload:{ data:data.data }});
             }
         },
         *fetchDeviceDetail(action, { put, select, call }){
@@ -125,17 +163,36 @@ export default {
             return { ...state, meterList:data };
         },
         getDeviceTypes(state, { payload:{ data }}){
-            let currentType = data && data.length ? data[0] : {};
-            return { ...state, deviceTypes:data, currentType };
+            let currentStation = data && data.length ? data[0] : {};
+            return { ...state, stationList:data, currentStation };
         },
         getInfoList(state, { payload:{ data, currentPage, total }}){
             return { ...state, deviceInfoList:data, currentPage, total, isLoading:false };
         },
-        toggleDeviceType(state, { payload }){
-            return { ...state, currentType:payload };
+        toggleStation(state, { payload }){
+            return { ...state, currentStation:payload };
         },
         getDeviceDetail(state, { payload:{ data }}){
             return { ...state, detailInfo:data, detailLoading:false };
+        },
+        getStationResult(state, { payload:{ data }}){
+            let result = state.stationInfoList.map(i=>{
+                i.value = data[i.key];
+                return i;
+            });
+            return { ...state, stationInfoList:result };
+        },
+        getStationChartResult(state, { payload:{ data, type }}){
+            if ( type === 'speed') {
+                return { ...state, speedChartInfo:data };
+            } else if ( type === 'pressure'){
+                return { ...state, pressureChartInfo:data };
+            } else if ( type === 'flow') {
+                return { ...state, flowChartInfo:data };
+            } else if ( type === 'temp') {
+                return { ...state, tempChartInfo:data };
+            }
+            return state;
         },
         resetDetail(state){
             return { ...state, detailInfo:{}, detailLoading:true };

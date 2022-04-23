@@ -76,7 +76,6 @@ export function getDeviceTypes(data = {}){
         }); 
 }
 
-
 export function getDeviceInfoList(data = {}){
     data.token = apiToken();
     let str = translateObj(data);
@@ -93,6 +92,18 @@ export function getDeviceDetail(data = {}){
     data.token = apiToken();
     let str = translateObj(data);
     return request('/gas/getdevicedetail', { 
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:str
+        }); 
+}
+
+export function getStationInfo(data = {}){
+    data.token = apiToken();
+    let str = translateObj(data);
+    return request('/gas/getmaininfo', { 
         method:'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'

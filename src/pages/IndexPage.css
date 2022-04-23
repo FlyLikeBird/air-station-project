@@ -750,6 +750,21 @@ html,body {
 .custom-modal.dark:global(.ant-modal) :global(.ant-modal-body) :global(.ant-form-item) :global(.ant-form-item-label) > label {
     color:#fff;
 }
+/* 自定义Modal深色样式组件 */
+.custom-modal-2:global(.ant-modal) :global(.ant-modal-content){
+    background:transparent;
+    height:100%;
+}
+.custom-modal-2:global(.ant-modal) :global(.ant-modal-content) :global(.ant-modal-body){
+    height:100%;
+    padding:2rem;
+    background-color:#000;
+    border:1px solid #787880;
+    border-radius:10px;
+}
+.custom-modal-2:global(.ant-modal) :global(.ant-modal-content) :global(.ant-modal-close-x) {
+    color:rgba(255, 255, 255, 0.8);
+}
 /* 自定义切换button样式 */
 .button-group-container {
     height:40px;

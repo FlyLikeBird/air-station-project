@@ -1,31 +1,42 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'dva';
 import { Tooltip } from 'antd';
-
 import { PayCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import CustomDatePicker from '@/pages/components/CustomDatePicker';
 import style from '@/pages/IndexPage.css';
 import MultiBarChart from './MultiBarChart';
+import Loading from '@/pages/components/Loading';
 
-let infoList = [
-    { color:'#af2bff', child:[{ title:'采集气电比', value:0.75, unit:'kwh/m³'}, { title:'采集电价', value:0.53, unit:'元/kwh' }]},
-    { color:'#04a3fe', child:[{ title:'当月气电比', value:0.90, unit:'kwh/m³'}, { title:'当月用气量', value:450000, unit:'m³' }]},
-    { color:'#5fd942', child:[{ title:'基准成本', value:150000, unit:'元'}, { title:'智控后成本', value:250000 , unit:'元'}, { title:'节省成本', value:100000, unit:'元'}]}
-];
-function CostSaveManager(){
+function SaveCostManager({ dispatch, cost }){
+    let { saveCost, chartLoading } = cost;
+    useEffect(()=>{
+        dispatch({ type:'cost/initSaveCost'});
+        return ()=>{
+            dispatch({ type:'cost/reset'});
+        }
+    },[])
     return (
         <div style={{ position:'relative' }}>
+            {
+                chartLoading 
+                ?
+                <Loading />
+                :
+                null
+            }
             <div style={{ height:'50px', display:'flex', alignItems:'center' }}>
                 <CustomDatePicker onDispatch={()=>{
-                    dispatch({ type:'cost/fetchCostChart' });
+                    dispatch({ type:'cost/fetchSaveCost' });
                 }} />
             </div>
             <div className={style['card-container']} style={{ height:'calc( 100% - 50px)', padding:'1rem' }}>
                 <div style={{ display:'flex', height:'100px'}}>
                     {
-                        infoList.map((item,i)=>(
+                        saveCost.infoList && saveCost.infoList.length 
+                        ?
+                        saveCost.infoList.map((item,i)=>(
                             <div key={i} style={{
-                                flex:i > 1 ? '2' : '1', 
+                                flex:i === 2 ? '2' : '1', 
                                 display:'flex', 
                                 alignItems:'center',
                                 justifyContent:'space-around',
@@ -58,9 +69,9 @@ function CostSaveManager(){
                                             <div>
                                                 { sub.title }
                                                 {
-                                                    i === 2 && j === 0
+                                                    sub.hasTooltip
                                                     ?
-                                                    <Tooltip overlayStyle={{ maxWidth:'unset' }} title={<div style={{ whiteSpace:'nowrap' }}>节省成本 = [未启用智控前气电比(kwh/m³) - 启用智控后气电比(kwh/m³)] X 用气量(m³) X 平均单价(元/kwh)</div>}><QuestionCircleOutlined style={{ marginTop:'4px', marginLeft:'4px' }} /></Tooltip>
+                                                    <Tooltip overlayStyle={{ maxWidth:'unset' }} title={<div style={{ whiteSpace:'nowrap' }}>{ sub.tooltipContent }</div>}><QuestionCircleOutlined style={{ marginTop:'4px', marginLeft:'4px' }} /></Tooltip>
                                                     :
                                                     null
                                                 }
@@ -76,11 +87,19 @@ function CostSaveManager(){
                                 }
                             </div>
                         ))
+                        :
+                        null
                     }
                 </div>
                 {/* 图表区 */}
                 <div style={{ height:'calc( 100% - 100px)' }}>
-                    <MultiBarChart theme='dark' />
+                    {
+                        Object.keys(saveCost).length 
+                        ?
+                        <MultiBarChart data={saveCost.view} theme='dark' />
+                        :
+                        null
+                    }
                 </div>
             </div>
         </div>
@@ -88,4 +107,4 @@ function CostSaveManager(){
     )
 }
 
-export default CostSaveManager;
+export default connect(({ cost })=>({ cost }))(SaveCostManager);

@@ -12,6 +12,7 @@ let subMenuMaps = {
 
 function CostMonitor({ dispatch, user, gasMach, device }){
     let { currentMenu, userMenu } = user;
+    let { stationList, currentStation } = device;
     let { machTree, treeLoading, currentNode, currentMach } = gasMach;
     const [subMenu, toggleSubMenu] = useState('');
     useEffect(()=>{
@@ -40,32 +41,65 @@ function CostMonitor({ dispatch, user, gasMach, device }){
                     </Menu>
                 </div>
             </div>
-            
-            <div className={style['card-container'] + ' ' + style['bottomRadius']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
-                <div className={style['card-title']}>统计对象</div>
-                <div className={style['card-content']}>
-                    {
-                        treeLoading
-                        ?
-                        <Spin className={style['spin']} />
-                        :
-                        <Tree
-                            className={style['custom-tree']}
-                            defaultExpandAll={true}                        
-                            selectedKeys={[currentNode.key ]}
-                            treeData={machTree}
-                            onSelect={(selectedKeys, {node})=>{  
-                                dispatch({ type:'gasMach/toggleNode', payload:node });
-                                if ( subMenu['menu_code'] === 'cost_monitor_info' ) {
-                                    dispatch({ type:'cost/fetchCostInfo' });
-                                    dispatch({ type:'cost/fetchCostChart'});
-                                } else if ( subMenu['menu_code'] === 'cost_monitor_save' ) {
-                                }         
-                            }}
-                        />
-                    }
+            {
+                subMenu['menu_code'] === 'cost_monitor_info' 
+                ?
+                <div className={style['card-container'] + ' ' + style['bottomRadius']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
+                    <div className={style['card-title']}>统计对象</div>
+                    <div className={style['card-content']}>
+                        {
+                            treeLoading
+                            ?
+                            <Spin className={style['spin']} />
+                            :
+                            <Tree
+                                className={style['custom-tree']}
+                                defaultExpandAll={true}                        
+                                selectedKeys={[currentNode.key ]}
+                                treeData={machTree}
+                                onSelect={(selectedKeys, {node})=>{  
+                                    dispatch({ type:'gasMach/toggleNode', payload:node });
+                                    if ( subMenu['menu_code'] === 'cost_monitor_info' ) {
+                                        dispatch({ type:'cost/fetchCostInfo' });
+                                        dispatch({ type:'cost/fetchCostChart'});
+                                    } else if ( subMenu['menu_code'] === 'cost_monitor_save' ) {
+                                        dispatch({ type:'cost/fetchSaveCost'});
+                                    }         
+                                }}
+                            />
+                        }
+                    </div>
                 </div>
-            </div>    
+                :
+                subMenu['menu_code'] === 'cost_monitor_save'
+                ?
+                <div className={style['card-container'] + ' ' + style['bottomRadius']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
+                    <div className={style['card-title']}>设备种类</div>
+                    <div className={style['card-content']}>
+                        <div className={style['list-container']}>
+                        {
+                            stationList && stationList.length 
+                            ?
+                            stationList.map((item,index)=>(
+                                <div className={item.device_id === currentStation.device_id  ? style['list-item'] + ' ' + style['selected'] : style['list-item']} key={index} onClick={()=>{
+                                    if ( currentStation.device_id !== item.device_id ){
+                                        dispatch({ type:'device/toggleStation', payload:item });
+                                        dispatch({ type:'cost/fetchSaveCost' });                                    
+                                    }                               
+                                }}>
+                                    <div>{ item.device_name }</div>
+                                    <div>{ item.count }</div>
+                                </div>
+                            ))
+                            :
+                            <div>没有配置设备档案</div>
+                        }
+                        </div>
+                    </div>
+                </div>
+                :
+                null
+            }              
         </div>
         
     );
@@ -77,4 +111,4 @@ function CostMonitor({ dispatch, user, gasMach, device }){
    
 }
 
-export default connect(({ user, gasMach })=>({ user, gasMach }))(CostMonitor);
+export default connect(({ user, gasMach, device })=>({ user, gasMach, device }))(CostMonitor);

@@ -7,7 +7,8 @@ const date = new Date();
 const initialState = {
     currentDate:moment(date).subtract(1,'months'),
     isLoading:true,
-    reportInfo:{}
+    reportInfo:{},
+    costInfo:{}
 };
 
 export default {

@@ -1,5 +1,6 @@
 import { 
     getDeviceTree,
+    getStationStatus,
     getPlanList, getPlanDetail, getPlanMachs, addPlan, updatePlan, delPlan, pushPlan
 } from '../services/gasMachService';
 import { getAirMachData } from '../services/stationService';
@@ -9,6 +10,7 @@ const initialState = {
     currentNode:{},
     currentMach:{},
     treeLoading:true,
+    stationMachList:[],
     //空压机列表的气压数据
     airMachStatus:[],
     // 系统控制-控制方案/记录相关状态
@@ -36,6 +38,18 @@ export default {
         *init(action, { put }){
             let { mode } = action.payload || {};
             yield put.resolve({ type:'fetchGasStation', payload:{ mode }});
+        },
+        *fetchStationStatus(action, { put, call, select }){
+            try {
+                let { user:{ company_id }} = yield select();
+                yield put({ type:'toggleLoading'});
+                let { data } = yield call(getStationStatus, { company_id });
+                if ( data && data.code === '0'){
+                    yield put({ type:'getStationResult', payload:{ data:data.data }});
+                }
+            } catch(err){
+                
+            }
         },
         *fetchGasStation(action, { put, select, call }){
             let { user:{ company_id }, gasMach:{ machTree }} = yield select();
@@ -131,6 +145,9 @@ export default {
         },
         toggleTreeLoading(state, { payload }){
             return { ...state, treeLoading:true };
+        },
+        getStationResult(state, { payload:{ data }}){
+            return { ...state, stationMachList:data, isLoading:false };
         },
         getGasStation(state, { payload:{ data, mode  }}){
             let currentNode = data && data.length ? data[0] : {};

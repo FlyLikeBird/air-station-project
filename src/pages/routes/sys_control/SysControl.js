@@ -4,10 +4,11 @@ import { Tree, Spin, Menu, message } from 'antd';
 import style from '@/pages/IndexPage.css';
 import ColumnCollapse from '@/pages/components/ColumnCollapse';
 import AutoControlManager from './AutoControlManager';
+import StationTableContainer from './StationTableContainer';
 import PlanManager from './PlanManager';
 
 let subMenuMaps = {
-    'gas_mach_oper':AutoControlManager,
+    'gas_mach_oper':StationTableContainer,
     'gas_control_plan':PlanManager
 };
 
@@ -41,8 +42,8 @@ function SysControl({ dispatch, user, gasMach }){
                     </Menu>
                 </div>
             </div>
-                    
-            <div className={style['card-container'] + ' ' + style['bottomRadius']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
+  
+            {/* <div className={style['card-container'] + ' ' + style['bottomRadius']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
                 <div className={style['card-title']}>统计对象</div>
                 <div className={style['card-content']}>
                     <div className={style['list-container']}>
@@ -67,7 +68,7 @@ function SysControl({ dispatch, user, gasMach }){
                     }
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
         
     );

@@ -18,7 +18,7 @@ let subMenuMaps = {
 function SmartManager({ dispatch, user, gasMach, device }){
     let { currentMenu, userMenu } = user;
     let { machTree, treeLoading, currentNode, currentMach } = gasMach;
-    let { deviceTypes, currentType } = device;
+    let { stationList, currentStation } = device;
     const [subMenu, toggleSubMenu] = useState('');
     useEffect(()=>{
         if ( currentMenu.child && currentMenu.child.length ){
@@ -116,16 +116,16 @@ function SmartManager({ dispatch, user, gasMach, device }){
                     <div className={style['card-content']}>
                         <div className={style['list-container']}>
                         {
-                            deviceTypes && deviceTypes.length 
+                            stationList && stationList.length 
                             ?
-                            deviceTypes.map((item,index)=>(
-                                <div className={item.device_type === currentType.device_type  ? style['list-item'] + ' ' + style['selected'] : style['list-item']} key={index} onClick={()=>{
-                                    if ( currentType.device_type !== item.device_type ){
-                                        dispatch({ type:'device/toggleDeviceType', payload:item });
+                            stationList.map((item,index)=>(
+                                <div className={item.device_id === currentStation.device_id  ? style['list-item'] + ' ' + style['selected'] : style['list-item']} key={index} onClick={()=>{
+                                    if ( currentStation.device_id !== item.device_id ){
+                                        dispatch({ type:'device/toggleStation', payload:item });
                                         dispatch({ type:'device/fetchInfoList' });                                    
                                     }                               
                                 }}>
-                                    <div>{ item.type_name }</div>
+                                    <div>{ item.device_name }</div>
                                     <div>{ item.count }</div>
                                 </div>
                             ))

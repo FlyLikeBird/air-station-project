@@ -179,14 +179,14 @@ html,body {
     font-size:1rem;
 }
 .self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-tbody) > tr > td:global(.multi-table-cell) > div > div{
-    border-bottom:1px solid #303463;
+    border-bottom:1px solid #1e2141;
 }
 /* 自定义Table组件合并单元格样式 */
 .self-table-container:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-tbody) > tr > td:global(.multi-table-cell) {
     padding:0;
 }
 .self-table-container:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-tbody) > tr > td:global(.multi-table-cell) > div > div{
-    padding:2px 10px;
+    padding:6px 10px;
     border-bottom:1px solid #f0f0f0;
 }
 .self-table-container:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-tbody) > tr > td:global(.multi-table-cell) > div > div:last-child {
@@ -520,8 +520,9 @@ html,body {
     border-radius: 8px;
     background:rgba(255,255,255,0.1);
 }
-.card-container::-webkit-scrollbar-track, .scroll-container::-webkit-scrollbar-corner {
+.card-container::-webkit-scrollbar-corner, .scroll-container::-webkit-scrollbar-corner {
     background:rgba(255,255,255,0.1);
+    box-shadow:none;
 }
 
 /* 

@@ -7,31 +7,44 @@ import arrow from '../../../../../public/arrow.png';
 import onImg from '../../../../../public/status_on.png';
 import offImg from '../../../../../public/status_off.png';
 
-
 let airMachMaps = {
     '01#英格索兰200HP':'ACSUB0752XWS01',
-    '02#巨风100HP':'ACSUB0752XWS02',
-    '03#巨风50HP':'ACSUB0752XWS03',
-    '04#阿特拉斯50HP':'ACSUB0752XWS04',
-    '05#阿特拉斯50HP':'ACSUB0752XWS05'
+    '02#阿特拉斯50HP':'ACSUB0752XWS02',
+    '03#阿特拉斯50HP':'ACSUB0752XWS03',
+    '04#巨风100HP':'ACSUB0752XWS04',
+    '05#英格索兰变频100HP':'ACSUB0752XWS05'
 };
-
 let eleMachMaps = {
     '01#英格索兰200HP':'2037000303',
-    '02#巨风100HP':'310810305701',
-    '03#巨风50HP':'310810305702',
-    '04#阿特拉斯50HP':'310810305703',
-    '05#阿特拉斯50HP':' 310810305704'
-}
+    '02#阿特拉斯50HP':'310810305704',
+    '03#阿特拉斯50HP':'310810305702',
+    '04#巨风100HP':'310810305701',
+    '05#英格索兰变频100HP':' 310810305703'
+};
+// let airMachMaps = {
+//     '01#英格索兰200HP':'ACSUB0752XWS01',
+//     '02#巨风100HP':'ACSUB0752XWS02',
+//     '03#巨风50HP':'ACSUB0752XWS03',
+//     '04#阿特拉斯50HP':'ACSUB0752XWS04',
+//     '05#阿特拉斯50HP':'ACSUB0752XWS05'
+// };
+
+// let eleMachMaps = {
+//     '01#英格索兰200HP':'2037000303',
+//     '02#巨风100HP':'310810305701',
+//     '03#巨风50HP':'310810305702',
+//     '04#阿特拉斯50HP':'310810305703',
+//     '05#阿特拉斯50HP':' 310810305704'
+// }
 
 // 定义canvas中一个元素（即一个设备对象）的输入口和输出口的方向和位置,绘制线条通过输入口和输出口连接
 let smallPadding = 20, largePadding = 40;
 let posMaps = {
     '01#英格索兰200HP':{ img:airMach, title:'01#英格索兰200HP', left:0, top:0, width:84, height:84, inPortDirec:'right', inPortOffset:42, outPortDirec:'right', outPortOffset:48  },
-    '04#阿特拉斯50HP':{ img:airMach, title:'04#阿特拉斯50HP', left:0, top:84 + largePadding + ( 84 + largePadding ) * 2, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
-    '05#阿特拉斯50HP':{ img:airMach, title:'05#阿特拉斯50HP', left:0, top:84 + largePadding + ( 84 + largePadding ) * 3, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
-    '03#巨风50HP':{ img:airMach, title:'03#巨风50HP', left:0, top: 84 + 84 + largePadding * 2, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
-    '02#巨风100HP':{ img:airMach, title:'02#巨风100HP', left:0, top:84 + largePadding , width:84, height:84, outPortDirec:'right', outPortOffset:42  },
+    '04#巨风100HP':{ img:airMach, title:'04#巨风100HP', left:0, top:84 + largePadding + ( 84 + largePadding ) * 2, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
+    '05#英格索兰变频100HP':{ img:airMach, title:'05#英格索兰变频100HP', left:0, top:84 + largePadding + ( 84 + largePadding ) * 3, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
+    '03#阿特拉斯50HP':{ img:airMach, title:'03#阿特拉斯50HP', left:0, top: 84 + 84 + largePadding * 2, width:84, height:84, outPortDirec:'right', outPortOffset:42  },
+    '02#阿特拉斯50HP':{ img:airMach, title:'02#阿特拉斯50HP', left:0, top:84 + largePadding , width:84, height:84, outPortDirec:'right', outPortOffset:42  },
     '1#储气罐':{ img:gasMach, title:'1#储气罐', left:260, top:20, width:64, height:202, inPortDirec:'left', inPortOffset:50, outPortDirec:'right', outPortOffset:120  },
     '2#储气罐':{ img:gasMach, title:'2#储气罐', left:380, top:20, width:64, height:202, inPortDirec:'left', inPortOffset:50, outPortDirec:'right', outPortOffset:120  },
     '3#储气罐':{ img:gasMach, title:'3#储气罐', left:300, top:300, width:64, height:202, inPortDirec:'left', inPortOffset:50, outPortDirec:'right', outPortOffset:120  },
@@ -47,10 +60,10 @@ let posMaps = {
 }
 let lineWidth = 8;
 let lineList = [
-    { delay:0, source:'02#巨风100HP', target:'3#储气罐', point1:{ x:50, y:0 }},
-    { delay:0, source:'03#巨风50HP', target:'3#储气罐', point1:{ x:50, y:0 } },
-    { delay:0, source:'04#阿特拉斯50HP', target:'3#储气罐', point1:{ x:50, y:0 } },
-    { delay:0, source:'05#阿特拉斯50HP', target:'3#储气罐', point1:{ x:50, y:0 } },
+    { delay:0, source:'02#阿特拉斯50HP', target:'3#储气罐', point1:{ x:50, y:0 }},
+    { delay:0, source:'03#阿特拉斯50HP', target:'3#储气罐', point1:{ x:50, y:0 } },
+    { delay:0, source:'04#巨风100HP', target:'3#储气罐', point1:{ x:50, y:0 } },
+    { delay:0, source:'05#英格索兰变频100HP', target:'3#储气罐', point1:{ x:50, y:0 } },
     { delay:3, source:'3#储气罐', target:'1#冷煤干燥机', point1:{ x:50, y:0 } },
     { delay:3, source:'3#储气罐', target:'2#冷煤干燥机', point1:{ x:50, y:0 } },
     { delay:3, source:'3#储气罐', target:'3#冷煤干燥机', point1:{ x:50, y:0 } },
@@ -226,7 +239,7 @@ function FlowChart({ dispatch, sumInfo, statusMaps, theme }){
                 var label = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
                 var innerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 // 绘制状态图像
-                // console.log(statusMaps);
+                console.log(statusMaps);
                 // console.log(posMaps[key]);
                 statusImg.setAttribute('height',28);
 			    statusImg.setAttribute('width',28);

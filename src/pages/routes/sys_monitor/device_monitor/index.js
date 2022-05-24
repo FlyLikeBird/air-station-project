@@ -19,8 +19,8 @@ let fieldList = [
     { isBool:true, title:'待机状态', key:'is_standby', 1:'待机', 0:'非待机'},
     { title:'加载压力(bar)', key:'loading', },
     { title:'卸载压力(bar)', key:'unloading'},
-    { title:'机组排气压力(bar)', key:'grp_air_out'},
-    { title:'主机排气温度(℃)', key:'main_tmp_out'},
+    { title:'机组排气压力(bar)', key:'grp_air_out', hasIcon:true, unit:'bar' },
+    { title:'主机排气温度(℃)', key:'main_tmp_out', hasIcon:true, unit:'℃' },
     { title:'运行时间(h)', key:'run_time'},
     { title:'加载时间(h)', key:'load_time'}
 ];
@@ -167,7 +167,7 @@ function DeviceMonitor({ dispatch, user, device }){
             <div style={{ height:'120px' }}>
                 {
                     stationInfoList.map((item,i)=>(
-                        <div className={style['inline-item-wrapper']} style={{ paddingLeft:i === 0 ? '0' : '1rem' }}>
+                        <div key={i} className={style['inline-item-wrapper']} style={{ paddingLeft:i === 0 ? '0' : '1rem' }}>
                             <div className={style['inline-item']} style={{ backgroundColor:'#2e2e44', display:'flex', alignItems:'center', padding:'0 2rem' }}>
                                 <div>
                                     <div>{ item.title }</div>
@@ -182,11 +182,11 @@ function DeviceMonitor({ dispatch, user, device }){
                                             item.key === 'pressure' ? pressureChartInfo : 
                                             item.key === 'speed' ? speedChartInfo : 
                                             item.key === 'flow' ? flowChartInfo : 
-                                            item.key === 'temp' ? tempChartInfo : {}
+                                            item.key === 'ele' ? tempChartInfo : {}
                                         } 
                                         forShort={true} 
                                         info={item}
-                                        onVisible={obj=>setInfo(item)}
+                                        onVisible={obj=>setInfo(obj)}
                                         dispatch={dispatch}
                                         theme='dark'
                                     />                                 
@@ -208,20 +208,23 @@ function DeviceMonitor({ dispatch, user, device }){
                                     <div style={{ textAlign:'center' }}><img src={item.img} style={{ height:'140px' }} /></div>
                                     <div style={{ padding:'0 2rem', color:'#fff' }}> 
                                         {
-                                            fieldList.map((field, j)=>(
-                                                <div key={`${index}-${j}`} style={{ 
+                                            fieldList.map((field, j)=>{                                    
+                                                return (<div key={`${index}-${j}`} style={{ 
                                                     display:'flex', 
                                                     justifyContent:'space-between', 
                                                     borderBottom: j === fieldList.length - 1 ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
                                                     padding:'0.5rem 0'
                                                 }}>
                                                     <span style={{ color:'rgba(255, 255, 255, 0.8)'}}>{ field.title }</span>
-                                                    <span>
+                                                    <span className={ field.key === 'is_running' ?  item[field.key] ? IndexStyle['tag-on'] : IndexStyle['tag-off']  : ''}>
                                                         { field.isBool ? field[item[field.key]] : item[field.key] }
-                                                        {/* { item.hasIcon ? <LineChartOutlined style={{ color:'#05a0f9', fontSize:'1.2rem', marginLeft:'4px' }} onClick={()=>setInfo({ visible:true, machInfo:{}})} /> : null } */}
+                                                        { field.hasIcon ? <LineChartOutlined style={{ color:'#05a0f9', fontSize:'1.2rem', marginLeft:'4px' }} onClick={()=>{
+                                                            dispatch({ type:'device/fetchDeviceDetail', payload:{ device_id:item.device_id }});
+                                                            setInfo({ title:field.title, key:field.key, value:0, unit:field.unit, device_id:item.device_id });
+                                                        }} /> : null }
                                                     </span>
-                                                </div>
-                                            ))
+                                                </div>)
+                                            })
                                         }
                                     </div>
                                 </div>
@@ -240,8 +243,23 @@ function DeviceMonitor({ dispatch, user, device }){
                 className={IndexStyle['custom-modal-2']}
                 onCancel={()=>setInfo({})}
             >
+                {
+                    isLoading 
+                    ?
+                    <Loading />
+                    :
+                    null
+                }
                 <LimitLineChart 
-                    data={info.key === 'pressure' ? pressureChartInfo : info.key === 'speed' ? speedChartInfo : info.key === 'flow' ? flowChartInfo : info.key === 'temp' ? tempChartInfo : {}} 
+                    data={ 
+                        info.key === 'grp_air_out' ? { date:detailInfo.view && detailInfo.view.date, value:detailInfo.view && detailInfo.view.outPress } : 
+                        info.key === 'main_tmp_out' ? { date:detailInfo.view && detailInfo.view.date, value:detailInfo.view && detailInfo.view.outPress } : 
+                        info.key === 'pressure' ? pressureChartInfo : 
+                        info.key === 'speed' ? speedChartInfo : 
+                        info.key === 'flow' ? flowChartInfo : 
+                        info.key === 'ele' ? tempChartInfo : 
+                        {}
+                    } 
                     info={info} 
                     onVisible={obj=>setInfo(obj)}
                     onDispatch={action=>dispatch(action)} 

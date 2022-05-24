@@ -11,12 +11,13 @@ const initialState = {
     statusMaps:{}
 };
 let airMachMaps = {
-    '1#空压机':'ACSUB0752XWS01',
-    '2#空压机':'ACSUB0752XWS02',
-    '3#空压机':'ACSUB0752XWS03',
-    '4#空压机':'ACSUB0752XWS04',
-    '5#空压机':'ACSUB0752XWS05'
+    '01#英格索兰200HP':'ACSUB0752XWS01',
+    '02#阿特拉斯50HP':'ACSUB0752XWS02',
+    '03#阿特拉斯50HP':'ACSUB0752XWS03',
+    '04#巨风100HP':'ACSUB0752XWS04',
+    '05#英格索兰变频100HP':'ACSUB0752XWS05'
 };
+
 export default {
     namespace:'flow',
     state:initialState,
@@ -47,19 +48,19 @@ export default {
         *initFlowChart(action, { all, put, call, select }){
             let { user:{ company_id }} = yield select();
             let [mach1, mach2, mach3, mach4, mach5] = yield all([
-                call(getAirMachData, { company_id, mach_type:'gas', register_code:airMachMaps['1#空压机'] }),
-                call(getAirMachData, { company_id, mach_type:'gas', register_code:airMachMaps['2#空压机'] }),
-                call(getAirMachData, { company_id, mach_type:'gas', register_code:airMachMaps['3#空压机'] }),
-                call(getAirMachData, { company_id, mach_type:'gas', register_code:airMachMaps['4#空压机'] }),
-                call(getAirMachData, { company_id, mach_type:'gas', register_code:airMachMaps['5#空压机'] }),
+                call(getAirMachData, { company_id, mach_type:'gas', register_code:airMachMaps['01#英格索兰200HP'] }),
+                call(getAirMachData, { company_id, mach_type:'gas', register_code:airMachMaps['02#阿特拉斯50HP'] }),
+                call(getAirMachData, { company_id, mach_type:'gas', register_code:airMachMaps['03#阿特拉斯50HP'] }),
+                call(getAirMachData, { company_id, mach_type:'gas', register_code:airMachMaps['04#巨风100HP'] }),
+                call(getAirMachData, { company_id, mach_type:'gas', register_code:airMachMaps['05#英格索兰变频100HP'] }),
             ]);
-            let { data } = yield call(getFlowChartData, { company_id })
+            let { data } = yield call(getFlowChartData, { company_id });
             let temp = {
                 '01#英格索兰200HP':mach1.data.data,
-                '02#巨风100HP':mach2.data.data,
-                '03#巨风50HP':mach3.data.data,
-                '04#阿特拉斯50HP':mach4.data.data,
-                '05#阿特拉斯50HP':mach5.data.data
+                '02#阿特拉斯50HP':mach2.data.data,
+                '03#阿特拉斯50HP':mach3.data.data,
+                '04#巨风100HP':mach4.data.data,
+                '05#英格索兰变频100HP':mach5.data.data
             };
             if ( data && data.code === '0') {
                 yield put({ type:'getResult', payload:{ data:data.data, statusMaps:temp }});

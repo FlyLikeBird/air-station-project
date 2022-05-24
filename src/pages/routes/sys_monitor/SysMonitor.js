@@ -4,12 +4,14 @@ import { Tree, Spin, Menu, message } from 'antd';
 import style from '@/pages/IndexPage.css';
 import ColumnCollapse from '@/pages/components/ColumnCollapse';
 import GasMonitor from './gas_monitor';
+import PressureMonitor from './pressure_monitor';
 import EleMonitor from './ele_monitor';
 import DeviceMonitor from './device_monitor';
 import FlowMonitor from './flow_monitor';
 
 let subMenuMaps = {
     'gas_eff':GasMonitor,
+    'gas_pressure':PressureMonitor,
     'gas_ele':EleMonitor,
     'gas_flow':FlowMonitor,
     'gas_mach_list':DeviceMonitor
@@ -94,12 +96,39 @@ function SmartManager({ dispatch, user, gasMach, device }){
                             <Tree
                                 className={style['custom-tree']}
                                 defaultExpandAll={true}                        
-                                selectedKeys={[currentMach.key ]}
+                                selectedKeys={[currentNode.device_id]}
                                 treeData={machTree}
                                 onSelect={(selectedKeys, {node})=>{  
-                                    dispatch({ type:'gasMach/toggleMach', payload:{ device_id:node.key, key:node.key, title:node.title }});
+                                    dispatch({ type:'gasMach/toggleNode', payload:node });
                                     dispatch({ type:'gasMonitor/fetchEleInfo', payload:{ type:'ele' }});
-                                    dispatch({ type:'gasMonitor/fetchEleChart'});                 
+                                    dispatch({ type:'gasMonitor/fetchEleChart'});                                                
+                                }}
+                            />
+                        }
+                    </div>
+                </div>
+                :
+                null
+            }
+            {
+                subMenu.menu_code === 'gas_pressure'
+                ?
+                <div className={style['card-container'] + ' ' + style['bottomRadius']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
+                    <div className={style['card-title']}>统计对象</div>
+                    <div className={style['card-content']}>
+                        {
+                            treeLoading
+                            ?
+                            <Spin className={style['spin']} />
+                            :
+                            <Tree
+                                className={style['custom-tree']}
+                                defaultExpandAll={true}                        
+                                selectedKeys={[currentMach.device_id]}
+                                treeData={machTree}
+                                onSelect={(selectedKeys, {node})=>{  
+                                    dispatch({ type:'gasMach/toggleMach', payload:node });                                
+                                    dispatch({ type:'gasMonitor/fetchPressureDiff'});                                                                                
                                 }}
                             />
                         }

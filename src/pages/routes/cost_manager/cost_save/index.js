@@ -36,7 +36,7 @@ function SaveCostManager({ dispatch, cost }){
                         ?
                         saveCost.infoList.map((item,i)=>(
                             <div key={i} style={{
-                                flex:i === 2 ? '2' : '1', 
+                                flex:i === 0 ? '1' : '2', 
                                 display:'flex', 
                                 alignItems:'center',
                                 justifyContent:'space-around',

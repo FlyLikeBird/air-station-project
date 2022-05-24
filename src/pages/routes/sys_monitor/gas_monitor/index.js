@@ -10,7 +10,8 @@ let tabList = [
     { tab:'瞬时流量', key:'1', unit:'m³/min' },
     { tab:'压力', key:'2', unit:'bar' },
     { tab:'气电比', key:'3', unit:'kwh/m³'},
-    { tab:'比功率', key:'4', unit:'m³/kwh' }
+    { tab:'比功率', key:'4', unit:'m³/kwh' },
+    { tab:'电能', key:'6', unit:'kwh'}
 ];
 function GasMonitor({ dispatch, user, gasMonitor }){
     useEffect(()=>{

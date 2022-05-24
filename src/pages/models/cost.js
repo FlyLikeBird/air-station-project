@@ -79,7 +79,14 @@ export default {
             let { info } = data;
             let infoList = [
                 { color:'#af2bff', child:[{ title:'采集气电比', value: info ? (info.collect_ele_gas_ratio).toFixed(4) : 0, unit:'kwh/m³'}, { title:'采集电价', value:info ? info.collect_ele_price : 0, unit:'元/kwh' }]},
-                { color:'#04a3fe', child:[{ title:'当前气电比', value:info ? (info.ele_gas_ratio).toFixed(4) : 0 , unit:'kwh/m³', hasTooltip:true, tooltipContent:info.ele_gas_ratio }, { title:'当前产气量', value:info ? info.total_gas : 0, unit:'m³' }]},
+                { 
+                    color:'#04a3fe', 
+                    child:[
+                        { title:'当前气电比', value:info ? (info.ele_gas_ratio).toFixed(4) : 0 , unit:'kwh/m³', hasTooltip:true, tooltipContent:info.ele_gas_ratio }, 
+                        { title:'当前电价', value:info ? (info.ele_price).toFixed(4) : 0, unit:'元/kwh', hasTooltip:true, tooltipContent:info.ele_price },
+                        { title:'当前产气量', value:info ? info.total_gas : 0, unit:'m³' }
+                    ]
+                },
                 { 
                     color:'#5fd942', 
                     child:[

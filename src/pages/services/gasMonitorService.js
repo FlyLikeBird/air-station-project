@@ -62,6 +62,17 @@ export function getEleChart(data = {}){
         body:str
         }); 
 }
+export function getPressureDiff(data = {}){
+    data.token = apiToken();
+    let str = translateObj(data);
+    return request('/gas/getpresurediff', { 
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:str
+        }); 
+}
 
 
 

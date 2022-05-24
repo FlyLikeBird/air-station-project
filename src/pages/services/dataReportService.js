@@ -1,7 +1,6 @@
 import request from '../utils/request';
 import { translateObj } from '../utils/translateObj';
 import { apiToken } from '../utils/encryption';
-import config from '../../../config';
 
 
 export function getCostReport(data = {}){
@@ -52,4 +51,28 @@ export function getRunningReport(data = {}){
         }); 
 }
 
+
+export function getBasicRatioReport(data = {}){
+    data.token = apiToken();
+    let str = translateObj(data);
+    return request('/gas/notaireport', { 
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:str
+        }); 
+}
+
+export function getSaveReport(data = {}){
+    data.token = apiToken();
+    let str = translateObj(data);
+    return request('/gas/savereport', { 
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:str
+        }); 
+}
 

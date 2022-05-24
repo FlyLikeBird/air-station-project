@@ -3,7 +3,8 @@ import {
     getGasEffChart,
     setMinPressure,
     getEleInfo,
-    getEleChart
+    getEleChart,
+    getPressureDiff
 } from '../services/gasMonitorService';
 import moment from 'moment';
 import { apiToken, encryptBy } from '@/pages/utils/encryption';
@@ -34,7 +35,7 @@ export default {
             yield put({ type:'fetchGasChart'});
         },
         *initEleMonitor(action, { put }){
-            yield put.resolve({ type:'gasMach/init', payload:{ mode:'single' }});
+            yield put.resolve({ type:'gasMach/init' });
             yield put({ type:'fetchEleInfo', payload:{ type:'ele' }});
             yield put({ type:'fetchEleChart'});
         },
@@ -67,17 +68,29 @@ export default {
             }
         },
         *fetchEleInfo(action, { put, select, call }){
-            let { user:{ company_id }, gasMach:{ currentMach }} = yield select();
+            let { user:{ company_id }, gasMach:{ currentNode }} = yield select();
             let { type } = action.payload || {};
-            let { data } = yield call(getEleInfo, { company_id, device_id:currentMach.device_id });
+            let { data } = yield call(getEleInfo, { company_id, device_id:currentNode.device_id });
             if ( data && data.code === '0'){
                 yield put({ type:'getGasEffInfo', payload:{ data:data.data, type }});
             }
         },
         *fetchEleChart(action, { put, select, call }){
-            let { user:{ company_id, timeType, startDate, endDate }, gasMach:{ currentMach }, gasMonitor:{ dataType }} = yield select();
+            let { user:{ company_id, timeType, startDate, endDate }, gasMach:{ currentNode }, gasMonitor:{ dataType }} = yield select();
             yield put({ type:'toggleChartLoading'});
-            let { data } = yield call(getEleChart, { company_id, device_id:currentMach.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType, type:dataType });
+            let { data } = yield call(getEleChart, { company_id, device_id:currentNode.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType, type:dataType });
+            if ( data && data.code === '0'){
+                yield put({ type:'getGasChart', payload:{ data:data.data }});
+            }
+        },
+        *initPressure(action, { put, select, call }){
+            yield put.resolve({ type:'gasMach/init', payload:{ mode:'single' } });
+            yield put({ type:'fetchPressureDiff'});
+        },
+        *fetchPressureDiff(action, { select, put, call }){
+            let { user:{ company_id, timeType, startDate, endDate }, gasMach:{ currentMach }} = yield select();
+            yield put({ type:'toggleChartLoading'});
+            let { data } = yield call(getPressureDiff, { company_id, device_id:currentMach.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType })
             if ( data && data.code === '0'){
                 yield put({ type:'getGasChart', payload:{ data:data.data }});
             }

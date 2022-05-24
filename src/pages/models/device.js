@@ -17,7 +17,8 @@ let typesMap = {
     'pressure':2,
     'speed':1,
     'flow':4,
-    'temp':5
+    'temp':5,
+    'ele':6
 }
 const initialState = {
     isLoading:true,
@@ -29,10 +30,10 @@ const initialState = {
     stationList:[],
     currentStation:{},
     stationInfoList:[
-        { title:'总管压力', key:'pressure', alue:0, unit:'bar' },
+        { title:'总管压力', key:'pressure', value:0, unit:'bar' },
         { title:'瞬时流量', key:'speed', value:0, unit:'m³/min' },
         { title:'今日累计流量', key:'flow', value:0, unit:'m³'},
-        { title:'露点温度', key:'temp', value:0, unit:'℃' }
+        { title:'今日电能', key:'ele', value:0, unit:'kwh' }
     ],
     pressureChartInfo:{},
     speedChartInfo:{},
@@ -103,10 +104,11 @@ export default {
             yield put({ type:'fetchStationChart', payload:{ type:'pressure'}});
             yield put({ type:'fetchStationChart', payload:{ type:'speed'}});
             yield put({ type:'fetchStationChart', payload:{ type:'flow'}});
-            yield put({ type:'fetchStationChart', payload:{ type:'temp'}});
+            yield put({ type:'fetchStationChart', payload:{ type:'ele'}});
         },
         *fetchStationChart(action, { put, select, call }){
             let { type } = action.payload || {};
+            yield put({ type:'toggleLoading'});
             let { user:{ company_id, timeType, startDate, endDate }, device:{ currentStation }} = yield select();
             let { data } = yield call(getGasEffChart, { company_id, device_id:currentStation.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType, type:typesMap[type] });
             if ( data && data.code === '0'){
@@ -184,15 +186,15 @@ export default {
         },
         getStationChartResult(state, { payload:{ data, type }}){
             if ( type === 'speed') {
-                return { ...state, speedChartInfo:data };
+                return { ...state, speedChartInfo:data, isLoading:false };
             } else if ( type === 'pressure'){
-                return { ...state, pressureChartInfo:data };
+                return { ...state, pressureChartInfo:data, isLoading:false };
             } else if ( type === 'flow') {
-                return { ...state, flowChartInfo:data };
-            } else if ( type === 'temp') {
-                return { ...state, tempChartInfo:data };
+                return { ...state, flowChartInfo:data, isLoading:false };
+            } else if ( type === 'ele') {
+                return { ...state, tempChartInfo:data, isLoading:false };
             }
-            return state;
+            return { ...state, isLoading:false };
         },
         resetDetail(state){
             return { ...state, detailInfo:{}, detailLoading:true };

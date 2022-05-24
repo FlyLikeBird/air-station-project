@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Modal, Input, message, Spin } from 'antd';
 import { findMaxAndMin } from '@/pages/utils/array';
-import CustomDatePicker from '@/pages/components/CustomDatePicker';
-import style from './DeviceMonitor.css';
-import Loading from '@/pages/components/Loading';
 
-function LimitLineChart({ timeType, data, info, onVisible, dispatch, forShort, theme }){
+
+function LineChart({ timeType, data, currentNode, theme, forShort }){
     const seriesData = [];
+    theme = 'dark';
     let textColor = theme === 'dark' ? '#b0b0b0' : '#000';
     let sortArr = data.value ? data.value.filter(i=>i).sort((a,b)=>b-a) : [];
     // let max = sortArr[0] <= ( info.key === '3' ? 1 : 10 ) ? ( info.key === '3' ? 1 : 10 ) : Math.ceil(sortArr[0]) + ( info.key === '3' ? 1 : 10 );
@@ -15,7 +14,7 @@ function LimitLineChart({ timeType, data, info, onVisible, dispatch, forShort, t
     let diff = max - min;
     seriesData.push({
         type:'line',
-        name:info.title,
+        name:'压差',
         data:data.value || [],
         smooth:true,
         itemStyle:{
@@ -35,29 +34,6 @@ function LimitLineChart({ timeType, data, info, onVisible, dispatch, forShort, t
         },
         symbolSize:0
     });
-    // 添加最小压力阈值
-    if ( !forShort ) {
-        if ( info.key === 'pressure' && data.value ) {
-            seriesData.push({
-                type:'line',
-                symbol:'none',
-                name:'下限',
-                data:data.value.map(i=> data.minPressure),
-                itemStyle:{
-                    color:'#fe2c2d'
-                },
-                lineStyle:{
-                    type:'dashed'
-                },
-                markPoint:{
-                    symbol:'rect',
-                    symbolSize:[120,20],
-                    data:[ { value:'下限 '+ data.minPressure + ' ' + info.unit, xAxis:data.value.length-2, yAxis:data.minPressure } ],
-                },
-                tooltip:{ show:false }
-            })
-        }
-    }
     
     let option = {
         grid:{
@@ -66,13 +42,6 @@ function LimitLineChart({ timeType, data, info, onVisible, dispatch, forShort, t
             left: forShort ? 10 : 20,
             right: forShort ? 10 : 20,
             containLabel: forShort ? false  : true
-        },
-        title:{
-            show:forShort ? false : true,
-            text:info.title,
-            textStyle:{ color:'#fff', fontSize:14 },
-            left:'center',
-            top:0,
         },
         tooltip:{
             show:forShort ? false : true,
@@ -95,7 +64,7 @@ function LimitLineChart({ timeType, data, info, onVisible, dispatch, forShort, t
         yAxis:{
             show:forShort ? false : true,
             type:'value',
-            name:info.unit,
+            name:'bar',
             nameTextStyle:{
                 color:textColor
             },
@@ -138,47 +107,14 @@ function LimitLineChart({ timeType, data, info, onVisible, dispatch, forShort, t
             }
         ]
     };
-    let onEvents = {
-        'click':(params)=>{
-            if ( params.componentType === 'markPoint' && params.data.value.includes('最小压力')){
-                return ;
-            }
-        }
-    }
+    
     return (
         <div style={{ height:'100%', position:'relative' }}>
-            {
-                !forShort 
-                ?
-                <div style={{ position:'absolute', zIndex:'2', right:'20px' }}>
-                    <CustomDatePicker size='small' onDispatch={()=>{
-                        if ( info.key === 'grp_air_out' || info.key === 'main_tmp_out') {
-                            dispatch({ type:'device/fetchDeviceDetail', payload:{ device_id:info.device_id}});
-                        } else {
-                            dispatch({ type:'device/fetchStationChart', payload:{ type:info.key }});
-                        }
-                    }} />
-                </div>
-                :
-                null
-            }
-            {
-                Object.keys(data).length 
-                ?
-                <div style={{ height:'100%', cursor:'pointer' }} onClick={()=>{
-                    if ( onVisible ){
-                        onVisible(info)
-                    }
-                }}><ReactEcharts
-                    notMerge={true}
-                    onEvents={onEvents}
-                    style={{ width:'100%', height:'100%' }}
-                    option={option}
-                /></div>
-                :
-                <Spin className={style['spin']} />
-            }
-             
+          <ReactEcharts
+                notMerge={true}
+                style={{ width:'100%', height:'100%' }}
+                option={option}
+            />   
         </div> 
     )
 }
@@ -189,4 +125,4 @@ function areEqual(prevProps, nextProps){
         return true;
     }
 }
-export default React.memo(LimitLineChart, areEqual);
+export default React.memo(LineChart, areEqual);

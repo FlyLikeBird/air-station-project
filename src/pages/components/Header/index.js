@@ -45,7 +45,7 @@ function cancelFullScreen(el ){
 
 function Header({ dispatch, user }){
     const containerRef = useRef();
-    const { currentMenu, userMenu, msg, userInfo, currentCompany, thirdAgent, fromAgent, fullscreen } = user;
+    const { currentMenu, userMenu, msg, userInfo, currentCompany, containerWidth, thirdAgent, fromAgent, fullscreen } = user;
     useEffect(()=>{
         if ( containerRef.current ){
             dispatch({ type:'user/setContainerWidth', payload:containerRef.current.offsetWidth });
@@ -117,16 +117,26 @@ function Header({ dispatch, user }){
                     }} />
                 }
                 <AlarmCom msg={msg} />
-                <WeatherCom />
+                
+                { containerWidth <= 1440 ? null : <WeatherCom /> }
                 <div style={{ display:'inline-flex', alignItems:'center', marginRight:'6px' }}>
                     <div style={{ width:'24px', height:'24px', borderRadius:'50%', backgroundColor:'#8888ac', backgroundRepeat:'no-repeat', backgroundSize:'cover', backgroundImage:`url(${avatarBg})`}}></div>
                     <div>{ userInfo.user_name || '--' }</div>
                     {/* <Tag color="blue">{ userInfo.role_name }</Tag> */}
                 </div>
                 <div style={{ cursor:'pointer', zIndex:'2' }}>                
-                    <Tag color='#2db7f5' onClick={()=>{
-                        dispatch({ type:'user/loginOut'});
-                    }}>退出</Tag>           
+                    {
+                        userInfo.agent_id 
+                        ?
+                        <Tag color='#2db7f5' onClick={()=>{
+                            history.push('/agent');
+                        }}>返回中台</Tag>
+                        :
+                        <Tag color='#2db7f5' onClick={()=>{
+                            dispatch({ type:'user/loginOut'});
+                        }}>退出</Tag>
+                    }
+                               
                 </div>
             </div>
         </div>

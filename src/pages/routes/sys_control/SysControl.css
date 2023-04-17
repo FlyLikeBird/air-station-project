@@ -62,3 +62,46 @@
 .inline-item .custom-switch :global(.ant-switch-handle)::before {
     border-radius:50%;
 }
+
+/* 能流图组件样式 */
+
+.flex-item-wrapper {
+    display:inline-block;
+    vertical-align: top;
+    width:25%;
+    padding:0 1rem 1rem 0;
+}
+
+.flex-item-wrapper .flex-item {
+    height:200px;
+    border-radius:6px;
+
+    background:#191932;
+}
+
+.flex-item .flex-item-content {
+    height:76%;
+}
+
+.flex-item .flex-item-footer {
+    height:24%;
+    background:rgba(255, 255, 255, 0.1);
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding:0 0.5rem;
+}
+
+.flex-item .unit {
+    font-size:0.8rem;
+    color:rgba(255, 255, 255, 0.65);
+}
+
+.flex-item .tag {
+    font-size:0.8rem;
+    padding:2px 6px;
+    background:#1890ff;
+    color:#fff;
+    
+}
+

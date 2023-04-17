@@ -3,9 +3,13 @@ import { Row, Col, Table, Button, Card, Tree, Select, Skeleton } from 'antd';
 import style from './ScrollTable.css';
 import IndexStyle from '@/pages/IndexPage.css';
 
-
-
+let tableData = [];
+for ( var i=0;i<20;i++){
+    tableData.push({ pos:'E区空压站', mach_name:'阿特拉斯AD-2342', type:'设备故障', time:'2022-06-20 14:00:30'});
+}
 function ScrollTable({ thead, data, scrollNum, forIndex }){
+    
+    // const [scroll, setScroll] = useState({ list: data && data.length ? data.slice(0,scrollNum) : [], current:0});
     const [scroll, setScroll] = useState({ list: data && data.length ? data.slice(0,scrollNum) : [], current:0});
     const scrollRef = useRef(scroll);
     useEffect(()=>{
@@ -53,9 +57,7 @@ function ScrollTable({ thead, data, scrollNum, forIndex }){
                     :
                     null
                 }
-                {/* <div>区域</div>
-                <div>设备</div>
-                <div>时间</div> */}
+              
             </div>
             <div className={style['content-container']}>
                 {
@@ -68,9 +70,19 @@ function ScrollTable({ thead, data, scrollNum, forIndex }){
                                 ?
                                 thead.map((col,index)=>(
                                     <div key={index} className={col.collapse ? style['collapse'] : ''} style={{ width:col.width, fontSize:'0.8rem' }}>
-                                        <span className={col.border ? IndexStyle['tag-off'] : ''}>
-                                            {/* { col.key === 'time' ? item[col.dataIndex].substring(0, item[col.dataIndex].length - 3 ) : item[col.dataIndex] ? item[col.dataIndex] : '-- --'} */}
-                                            { item[col.dataIndex] ? item[col.dataIndex] : '-- --'}
+                                        <span className={col.border ? style['tag-off'] : ''}>
+                                            {
+                                                col.type === 'time' 
+                                                ?
+                                                <span>
+                                                    <span style={{ color:'#fff' }}>{ item[col.dataIndex].split(' ')[1]}</span>
+                                                    <br/>
+                                                    <span style={{ display:'inline-block', color:'rgba(255, 255, 255, 0.65)', transform:'scale(0.9)', transformOrigin:'left' }}>{ item[col.dataIndex].split(' ')[0]}</span>
+                                                </span>
+                                                
+                                                :
+                                                item[col.dataIndex] ? item[col.dataIndex] : '-- --'
+                                            }
                                         </span>
                                     </div>
                                 ))

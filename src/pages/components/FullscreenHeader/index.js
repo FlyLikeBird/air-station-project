@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import headerBg from '../../../../public/air-station-header.png';
+import titleBg from '../../../../public/agent_title_bg.png';
+
 import { getToday } from '@/pages/utils/parseDate';
-import { UserOutlined, FullscreenExitOutlined } from '@ant-design/icons'
+import { UserOutlined, FullscreenExitOutlined, LogoutOutlined } from '@ant-design/icons'
 import style from './FullscreenHeader.css';
 function cancelFullScreen(el ){
     // let func = el.cancelFullsceen || el.msCancelFullsceen || el.mozCancelFullsceen || el.webkitCancelFullsceen 
@@ -22,7 +24,7 @@ const weekObj = {
     6:'周六',
 }
 let timer = null;
-function FullscreenHeader({ dispatch, user, title }){
+function FullscreenHeader({ dispatch, user, title, forAgent }){
     let { userInfo, weatherInfo } = user;
     let week = new Date().getDay();
     const [curTime, updateTime] = useState(getToday(2));
@@ -40,7 +42,9 @@ function FullscreenHeader({ dispatch, user, title }){
     },[]);
     return (
         <div className={style['container']} style={{ backgroundImage:`url(${headerBg})`}}>
-            <div className={style['title']}>{ title }</div>
+            <div className={style['title']}>
+                <img src={titleBg} style={{ height:'100%' }} />
+            </div>
             <div className={style['weather-container']}>
                 <span className={style['spec-time']}>{ nowTime }</span>
                 <span>{`${weekObj[week]} ${year}` }</span>
@@ -49,7 +53,16 @@ function FullscreenHeader({ dispatch, user, title }){
             </div>
             <div className={style['btn-group']}>
                 <span className={style['btn-item']}><UserOutlined />{ userInfo.user_name } </span>
-                <span className={style['btn-item']} onClick={()=>cancelFullScreen()} style={{ cursor:'pointer' }}><FullscreenExitOutlined  />退出全屏</span>
+                <span className={style['btn-item']} onClick={()=>{
+                    if ( forAgent ){
+                        dispatch({ type:'user/loginOut'});
+                    } else {
+                        cancelFullScreen();
+                    }
+                }} style={{ cursor:'pointer' }}>
+                    { forAgent ? <LogoutOutlined style={{ marginRight:'6px' }} /> : <FullscreenExitOutlined style={{ marginRight:'6px' }} /> }
+                    { forAgent ? '退出登录' : '退出全屏' }
+                </span>
             </div>
         </div>
     )

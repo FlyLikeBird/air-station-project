@@ -6,14 +6,33 @@ import {
     getEleChart,
     getPressureDiff
 } from '../services/gasMonitorService';
+import { getTypeRule, setTypeRule } from '../services/userService';
 import moment from 'moment';
-import { apiToken, encryptBy } from '@/pages/utils/encryption';
 const date = new Date();
+let gasTabList = [
+    { tab:'瞬时流量', key:'1', unit:'m³/min', type:'gas_flow' },
+    { tab:'压力', key:'2', unit:'bar', type:'gas_pressure' },
+    { tab:'气电比', key:'3', unit:'kwh/m³', type:'' },
+    { tab:'比功率', key:'10', unit:'m³/kwh', type:'' },
+    { tab:'电能', key:'6', unit:'kwh', type:'' }
+];
+
+let eleTabList = [
+    { tab:'需量', key:'1', unit:'kw', type:'' },
+    { tab:'电压', key:'2', unit:'V', type:'line_voltage' },
+    { tab:'视在功率', key:'3', unit:'kw', type:'apparent_power' },
+    { tab:'有功功率', key:'4', unit:'kw', type:'power'},
+    { tab:'无功功率', key:'5', unit:'kvar', type:'reactive_power'},
+    { tab:'电流', key:'6', unit:'A', type:'electric_current' }
+];
 const initialState = {
     gasInfo:{},
+    gasTabList,
+    eleTabList,
+    currentTab:gasTabList[0],
     chartLoading:true,
-    dataType:'1',
-    chartInfo:{}
+    chartInfo:{},
+    typeRule:{}
 };
 
 export default {
@@ -31,13 +50,22 @@ export default {
         },
         *initGasMonitor(action, { put }){
             yield put.resolve({ type:'gasMach/init'});
+            yield put({ type:'toggleTab', payload:gasTabList[0] });
             yield put({ type:'fetchGasInfo', payload:{ type:'gas'} });
+            yield put({ type:'fetchGasChart'});
+            yield put({ type:'fetchTypeRule'});
+        },
+        *initGasTrend(action, { put }){
+            yield put.resolve({ type:'gasMach/init'});
+            yield put({ type:'toggleTab', payload:{ tab:'累计流量', key:'4', unit:'m³', type:''}});
             yield put({ type:'fetchGasChart'});
         },
         *initEleMonitor(action, { put }){
             yield put.resolve({ type:'gasMach/init' });
+            yield put({ type:'toggleTab', payload:eleTabList[0] });
             yield put({ type:'fetchEleInfo', payload:{ type:'ele' }});
             yield put({ type:'fetchEleChart'});
+            yield put({ type:'fetchTypeRule'});
         },
         *fetchGasInfo(action, { put, select, call }){
             let { user:{ company_id }, gasMach:{ currentNode }} = yield select();
@@ -45,6 +73,39 @@ export default {
             let { data } = yield call(getGasEffInfo, { company_id, device_id:currentNode.device_id });
             if ( data && data.code === '0'){
                 yield put({ type:'getGasEffInfo', payload:{ data:data.data, type }});
+            }
+        },
+        *fetchTypeRule(action, { call, put, select }) {
+            let { user:{ company_id }, gasMach:{ currentNode }, gasMonitor:{ currentTab }} = yield select();
+            if ( currentTab.type ){
+                let { data } = yield call(getTypeRule, { company_id, device_id:currentNode.device_id, type_code:currentTab.type });
+                if ( data && data.code === '0'){
+                    yield put({ type:'getTypeRuleResult', payload:{ data:data.data }});
+                }
+            } else {
+                yield put({ type:'getTypeRuleResult', payload:{ data:null }});
+            }
+            
+        },
+        *setRule(action, { call, put, select }){
+            let { user:{ company_id }, gasMach:{ currentNode }, gasMonitor:{ currentTab, typeRule }} = yield select();
+            let { warning_min, warning_max, resolve, reject } = action.payload || {};
+            let object = { company_id, device_id:currentNode.device_id, type_code:currentTab.type };
+            if ( typeRule && typeRule.rule_id ) {
+                object.rule_id = typeRule.rule_id;
+            }
+            if ( warning_min ) {
+                object.warning_min = warning_min;
+            }
+            if ( warning_max ){
+                object.warning_max = warning_max;
+            }
+            let { data } = yield call(setTypeRule, object);
+            if ( data && data.code === '0'){
+                if ( resolve ) resolve();
+                yield put({ type:'fetchTypeRule'});
+            } else {
+                if ( reject ) reject(data.msg);
             }
         },
         *setPressure(action, { put, select, call }){
@@ -60,11 +121,11 @@ export default {
             } 
         },
         *fetchGasChart(action, { put, select, call }){
-            let { user:{ company_id, timeType, startDate, endDate }, gasMach:{ currentNode }, gasMonitor:{ dataType }} = yield select();
+            let { user:{ company_id, timeType, startDate, endDate }, gasMach:{ currentNode }, gasMonitor:{ currentTab }} = yield select();
             yield put({ type:'toggleChartLoading'});
-            let { data } = yield call(getGasEffChart, { company_id, device_id:currentNode.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType, type:dataType === '4' ? '3' : dataType });
+            let { data } = yield call(getGasEffChart, { company_id, device_id:currentNode.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType, type:currentTab.key === '10' ? '3' : currentTab.key });
             if ( data && data.code === '0'){
-                yield put({ type:'getGasChart', payload:{ data:data.data, dataType, type:'gas' }});
+                yield put({ type:'getGasChart', payload:{ data:data.data, dataType:currentTab.key, type:'gas' }});
             }
         },
         *fetchEleInfo(action, { put, select, call }){
@@ -76,9 +137,9 @@ export default {
             }
         },
         *fetchEleChart(action, { put, select, call }){
-            let { user:{ company_id, timeType, startDate, endDate }, gasMach:{ currentNode }, gasMonitor:{ dataType }} = yield select();
+            let { user:{ company_id, timeType, startDate, endDate }, gasMach:{ currentNode }, gasMonitor:{ currentTab }} = yield select();
             yield put({ type:'toggleChartLoading'});
-            let { data } = yield call(getEleChart, { company_id, device_id:currentNode.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType, type:dataType });
+            let { data } = yield call(getEleChart, { company_id, device_id:currentNode.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType, type:currentTab.key });
             if ( data && data.code === '0'){
                 yield put({ type:'getGasChart', payload:{ data:data.data }});
             }
@@ -88,9 +149,9 @@ export default {
             yield put({ type:'fetchPressureDiff'});
         },
         *fetchPressureDiff(action, { select, put, call }){
-            let { user:{ company_id, timeType, startDate, endDate }, gasMach:{ currentMach }} = yield select();
+            let { user:{ company_id, timeType, startDate, endDate }, gasMach:{ currentNode }} = yield select();
             yield put({ type:'toggleChartLoading'});
-            let { data } = yield call(getPressureDiff, { company_id, device_id:currentMach.device_id, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType })
+            let { data } = yield call(getPressureDiff, { company_id, device_id:currentNode.key, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD'), time_type:timeType })
             if ( data && data.code === '0'){
                 yield put({ type:'getGasChart', payload:{ data:data.data }});
             }
@@ -118,14 +179,20 @@ export default {
             data.infoList = infoList;
             return { ...state, gasInfo:data };
         },
-        setDataType(state, { payload }){
-            return { ...state, dataType:payload };
+        getTypeRuleResult(state, { payload:{ data }}){
+            return { ...state, typeRule:data };
+        },
+        toggleTab(state, { payload }){
+            return { ...state, currentTab:payload };
         },
         getGasChart(state, { payload:{ data, dataType, type }}){
-            if ( dataType === '4' && type === 'gas') {
+            if ( dataType === '3' && type === 'gas' ){
+                data.value = data.value.map(item=>(+item).toFixed(4));
+            }
+            if ( dataType === '10' && type === 'gas') {
                 data.value = data.value.map((item,index)=>{
                     return item === null ? null : item ? (1/item).toFixed(2) : 0 ;
-                })
+                });
             }
             return { ...state, chartInfo:data, chartLoading:false };
         },

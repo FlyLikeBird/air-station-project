@@ -23,7 +23,7 @@ function checkStatus(response) {
  */
 export default function request(url, options, otherProxy) {
     let config = window.g;
-    let proxy = otherProxy || config.proxy;
+    let proxy = otherProxy === 'noPrefix' ? '' : otherProxy || config.proxy ;
     let finalURL = `http://${config.apiHost}${proxy}${url}`;
     return fetch(finalURL, options)
         .then(checkStatus)

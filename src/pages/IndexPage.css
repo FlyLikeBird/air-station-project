@@ -689,6 +689,30 @@ html,body {
 .custom-select:global(.ant-select) :global(.ant-select-arrow) {
     color:#fff;
 }
+/* 自定义Search搜索组件样式 */
+.custom-search-input {
+    margin:10px 0;
+}
+.custom-search-input :global(.ant-input-wrapper) :global(.ant-input-affix-wrapper) {
+    background-color:transparent;
+    border:1px solid #1890ff;
+}
+.custom-search-input :global(.ant-input-wrapper) :global(.ant-input-affix-wrapper) input {
+    background-color:transparent;
+    color:rgba(255, 255, 255, 0.85);
+}
+.custom-search-input :global(.ant-input-wrapper) :global(.ant-input-affix-wrapper) :global(.ant-input-suffix) :global(.anticon) {
+    color:rgba(255, 255, 255, 0.85);
+}
+.custom-search-input :global(.ant-input-wrapper) :global(.ant-input-group-addon) {
+    background-color:#1890ff;
+    color:rgba(255, 255, 255, 0.85);
+}
+.custom-search-input :global(.ant-input-wrapper) :global(.ant-input-group-addon) button {
+    background-color:#1890ff;
+    color:rgba(255, 255, 255, 0.85) !important;
+    border:none;
+}
 @media (max-width:1440px){
     .custom-select:global(.ant-select){
         height:24px !important;
@@ -926,7 +950,7 @@ html,body {
     font-weight:normal;
     line-height: 2.4rem;
     letter-spacing: 0.4rem;
-    text-shadow: #53535e 5px 2px 0px;
+    text-shadow: #4b6c55 5px 2px 0px;
 }
 .text {
     font-size:1rem;
@@ -1029,8 +1053,11 @@ html,body {
     border:1px solid #ddd;
 }
 .container.dark .list-container .list-item {
-    border:1px solid #fff;
+    border:1px solid rgba(255, 255, 255, 0.25);
     color:#fff;
+    white-space:nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .list-container.inline .list-item {
     display:inline-block;
@@ -1111,6 +1138,9 @@ html,body {
     color:#fff;
 }
 .custom-drawer:global(.ant-drawer) .info-container :global(.ant-select) :global(.ant-select-arrow){
+    color:#fff;
+}
+.custom-drawer:global(.ant-drawer) :global(.ant-drawer-close){
     color:#fff;
 }
 /* 自定义Button组件样式 */

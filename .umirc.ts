@@ -23,11 +23,11 @@ export default defineConfig({
     hash:true,
     routes: [
         { path: '/login', component: '@/pages/routes/login_page' },
+        { path:'/agent', component:'@/pages/routes/agent_manager'},
         { 
             path:'/', 
             component:'@/pages/index.tsx',
             routes:[
-                { path:'/', component:'@/pages/routes/index_page'},
                 { path:'/gas_home', component:'@/pages/routes/index_page'},
                 { path:'/gas_system', component:'@/pages/routes/sys_monitor'},
                 { path:'/cost_monitor', component:'@/pages/routes/cost_manager' },
@@ -37,8 +37,7 @@ export default defineConfig({
                 { path:'/gas_report', component:'@/pages/routes/analyze_report'},
                 { path:'/gas_control', component:'@/pages/routes/sys_control'},
                 { path:'/sys_setting', component:'@/pages/routes/sys_setting'},
-                { path:'/test', component:'@/pages/routes/SvgTest'},
-                { path:'/table_test', component:'@/pages/routes/Test3'}
+                { path:'/', component:'@/pages/routes/index_page'}
                 // { path:'/test', component:'@/pages/routes/Test2'}
                 // { path:'/sw_meter', component:'@/pages/routes/terminal_mach'},
                 // { path:'/sw_ctrl', component:'@/pages/routes/smart_manager'},

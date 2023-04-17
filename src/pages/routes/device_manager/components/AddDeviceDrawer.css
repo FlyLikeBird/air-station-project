@@ -1,0 +1,100 @@
+.form-container {
+
+}
+
+.form-container:global(.ant-form-inline) > :global(.ant-form-item){
+    width:50%;
+    line-height:3;
+    margin-right:0;
+    font-size:1rem;
+}
+
+.form-container:global(.ant-form-inline) > :global(.ant-form-item):global(.ant-form-item-with-help){
+    margin-bottom:0;
+}
+.form-container:global(.ant-form-inline) > :global(.ant-form-item) > :global(.ant-form-item-label) {
+    width:14rem;
+    border:1px solid #6a7483;
+    background:rgba(255, 255, 255, 0.15);
+    margin-left:-1px;
+    margin-top:-1px;
+}
+
+.form-container:global(.ant-form-inline) > :global(.ant-form-item) > :global(.ant-form-item-label) > label  {
+    color:rgba(255, 255, 255, 0.85);
+}
+
+.form-container:global(.ant-form-inline) > :global(.ant-form-item) > :global(.ant-form-item-control) {
+    flex:1;
+    margin-left:-1px;   
+    margin-top:-1px;
+    border:1px solid #6a7483;
+}
+.form-container:global(.ant-form-inline) > :global(.ant-form-item) > :global(.ant-form-item-control) :global(.ant-form-item-explain) {
+    position:absolute;
+    top:100%;
+}
+
+/* form内部控件样式 */
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) input {
+    border:none;
+}
+.form-container :global(.ant-form-item):global(.ant-form-item-has-error) :global(.ant-form-item-control) input {
+    border:none;
+    background:transparent;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-input-number) {
+    border:none;
+    background:transparent;
+    width:100%;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-picker) {
+    border:none;
+    background:transparent;
+    width:100%;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-control) :global(.ant-picker) :global(.ant-picker-suffix) {
+    color:#fff;
+}
+.form-container :global(.ant-select) :global(.ant-select-selector) {
+    background:transparent;
+    border:none;
+    color:#fff;
+}
+.form-container :global(.ant-form-item):global(.ant-form-item-has-error) :global(.ant-select) :global(.ant-select-selector) {
+    background:transparent;
+    border:none;
+    color:#fff;
+}
+.form-container :global(.ant-select) :global(.ant-select-arrow) {
+    color:#fff;
+}
+/*  */
+.form-container :global(.ant-select-multiple) :global(.ant-select-selection-item) {
+    background: rgba(21,138,250,0.5);
+    border: none;
+    border-radius: 10px;
+}
+.form-container :global(.ant-select-multiple) :global(.ant-select-selection-item) :global(.ant-select-selection-item-remove) {
+    color:#fff;
+}
+/*  */
+.form-container :global(.ant-form-item) :global(.ant-upload-list) {
+    color:#fff;
+    padding:1rem 2rem;
+}
+.form-container :global(.ant-form-item) :global(.ant-upload-list) :global(.ant-upload) {
+    color:#fff;
+    background:rgba(255, 255, 255, 0.15);
+    border:rgba(255, 255, 255, 0.25);
+}
+.form-container :global(.ant-form-item) :global(.ant-upload-list) :global(.ant-upload-list-item)  {
+    border:none;
+}
+.form-container :global(.ant-form-item) :global(.ant-upload-list) :global(.ant-upload-list-item) :global(.ant-upload-text-icon) > span:global(.anticon) {
+    color:#fff;
+}
+/*  */
+.custom-upload {
+    
+}

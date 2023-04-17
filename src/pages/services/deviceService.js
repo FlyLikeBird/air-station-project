@@ -52,6 +52,7 @@ export function delDevice(data = {}){
         }); 
 }
 
+
 export function getBindMeter(data = {}){
     data.token = apiToken();
     let str = translateObj(data);
@@ -104,6 +105,30 @@ export function getStationInfo(data = {}){
     data.token = apiToken();
     let str = translateObj(data);
     return request('/gas/getmaininfo', { 
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:str
+        }); 
+}
+
+export function getUnctrlTime(data = {}){
+    data.token = apiToken();
+    let str = translateObj(data);
+    return request('/gas/getUnctrlTime', { 
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:str
+        }); 
+}
+
+export function setUnctrlTime(data = {}){
+    data.token = apiToken();
+    let str = translateObj(data);
+    return request('/gas/setUnctrlTime', { 
         method:'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'

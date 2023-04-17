@@ -13,7 +13,7 @@ let subMenuMaps = {
 function CostMonitor({ dispatch, user, gasMach, device }){
     let { currentMenu, userMenu } = user;
     let { stationList, currentStation } = device;
-    let { machTree, treeLoading, currentNode, currentMach } = gasMach;
+    let { machTree, treeLoading, currentNode } = gasMach;
     const [subMenu, toggleSubMenu] = useState('');
     useEffect(()=>{
         if ( currentMenu.child && currentMenu.child.length ){

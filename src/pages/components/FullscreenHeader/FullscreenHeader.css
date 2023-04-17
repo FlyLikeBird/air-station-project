@@ -3,13 +3,16 @@
     src:url('../../../../public/Quartz Regular.ttf');
 } 
 .container {
-    height:70px;
+    height:60px;
     padding:0 1rem;
     overflow: hidden;
     background-repeat: no-repeat;
     background-size:contain;
-    position:relative;
+    position:absolute;
+    width:100%;
+    top:0;
     background-position: 50% 0;
+    z-index:10;
 }
 
 .weather-container {
@@ -17,6 +20,8 @@
     top:0;
     left:1rem;
     color:rgba(255, 255, 255, 0.8);
+    display:inline-flex;
+    align-items: center;
 }
 
 .btn-group {
@@ -39,9 +44,8 @@
 .title {
     color:rgba(255, 255, 255, 0.5);
     font-size:2rem;
-    font-weight:bold;
     text-align: center;
-    margin-top:6px;
+    margin-top:4px;
     background-image:-webkit-linear-gradient(bottom, #c8ecfa, #adecf9);
     -webkit-background-clip:text;
     -webkit-text-fill-color:transparent;
@@ -50,7 +54,7 @@
 
 .spec-time {
     font-family:selfFont;
-    font-size:2rem;
+    font-size:1.6rem;
     color:#fff;
     margin-right:2rem;
 }

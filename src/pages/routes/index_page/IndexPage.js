@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Redirect } from 'umi';
 import { connect } from 'dva';
 import { Spin } from 'antd';
 import style from './airStation.css';
@@ -20,8 +21,8 @@ function isFullscreen(){
            document.mozFullScreenElement ||
            document.webkitFullscreenElement || false;
 }
-function IndexPage({ dispatch, user, home }){
-    let { userInfo, companyList, msg, authorized } = user;
+function IndexPage({ dispatch, user, location, home }){
+    let { userInfo, companyList, msg, userMenu, currentMenu, routePath, authorized } = user;
     let { data, sceneLoading } = home;
     let loaded = Object.keys(data).length ? true : false; 
     let isFulled = isFullscreen();
@@ -41,6 +42,11 @@ function IndexPage({ dispatch, user, home }){
         }
     },[authorized]);
     return (
+        // 当包含首页时才渲染首页模块，否则跳转到菜单列表默认的第一项
+        authorized 
+        ?
+        routePath.includes('gas_home')
+        ?
         <div className={style['container']} style={{ backgroundImage:`url(${monitorBg})`}}>
             {
                 isFulled
@@ -137,7 +143,7 @@ function IndexPage({ dispatch, user, home }){
                     </div>
                 </div>
                 {/* 实时监控数据 */}
-                <div className={IndexStyle['card-container']} style={{ height:'60%', backgroundColor:'transparent', overflow:'hidden' }}>
+                <div className={IndexStyle['card-container']} style={{ height:'56%', backgroundColor:'transparent', overflow:'hidden' }}>
                     <div className={IndexStyle['card-title']} style={{ color:'#fff', fontWeight:'normal' }}>实时监控数据</div>
                     <div className={IndexStyle['card-content']}>
                         {
@@ -153,14 +159,14 @@ function IndexPage({ dispatch, user, home }){
                     </div>
                 </div>
                 {/* 告警列表 */}
-                <div className={IndexStyle['card-container']} style={{ height:'24%', backgroundColor:'transparent', overflow:'hidden' }}>
+                <div className={IndexStyle['card-container']} style={{ height:'28%', backgroundColor:'transparent', overflow:'hidden' }}>
                     <div className={IndexStyle['card-title']} style={{ color:'#fff', fontWeight:'normal' }}>告警列表</div>
                     <div className={IndexStyle['card-content']} style={{ padding:'0' }}>
                         {
                             loaded 
                             ?
                             <ScrollTable 
-                                thead={[{ title:'位置', dataIndex:'region_name', width:'18%', collapse:true }, { title:'设备', dataIndex:'mach_name', width:'20%', collapse:true }, { title:'分类', dataIndex:'type_name', width:'25%', border:true }, { title:'发生时间', dataIndex:'last_warning_time', key:'time', width:'37%' }]}
+                                thead={[{ title:'位置', dataIndex:'region_name', width:'22%', collapse:true }, { title:'设备', dataIndex:'mach_name', width:'32%', collapse:true }, { title:'分类', dataIndex:'type_name', width:'30%', border:true }, { title:'时间', dataIndex:'last_warning_time', type:'time', width:'16%' }]}
                                 data={data.warning || []} 
                                 scrollNum={4}
                             />
@@ -172,6 +178,10 @@ function IndexPage({ dispatch, user, home }){
                 </div>
             </div>
         </div>
+        :
+        <Redirect to={`/${routePath[0]}${location.search}`} />
+        :
+        null
     )
 }
 

@@ -5,7 +5,7 @@
 }
 
 .container .thead {
-    height:14%;
+    height:10%;
     color:rgba(255,255,255,0.8);
 }
 
@@ -25,7 +25,7 @@
 }
 
 .container .content-container {
-    height:86%;
+    height:90%;
 }
 
 .content-container .item {
@@ -54,7 +54,14 @@
 .content-container .item>div:nth-child(1){
     width:24%;
 }
-
+.content-container .item .tag-off {
+    background-color:rgba(255, 45, 46, 0.2);
+    border:1px solid #ff2d2e;
+    color:#ff2d2e;
+    padding:2px 4px;
+    white-space:nowrap;
+    font-size:0.8rem;
+}
 @media ( max-width:1440px){
     .content-container .item > div {
         transform:scale(0.9);

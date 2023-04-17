@@ -3,6 +3,7 @@ import {
     addDevice,
     updateDevice,
     delDevice,
+    getDeviceStatus,
     getBindMeter,
     getDeviceTypes,
     getDeviceInfoList,
@@ -40,6 +41,7 @@ const initialState = {
     flowChartInfo:{},
     tempChartInfo:{},
     deviceInfoList:[],
+
     detailInfo:{},
     detailLoading:true
 };
@@ -96,6 +98,10 @@ export default {
             } else {
                 if ( reject && typeof reject === 'function') reject(data.msg);
             }
+        },
+        *initDetail(action, { put }){
+            yield put.resolve({ type:'gasMach/fetchGasStation', payload:{ mode:'single'} });
+            yield put({ type:'fetchDeviceDetail'});
         },
         *initInfoList(action, { put }){
             yield put.resolve({ type:'fetchDeviceTypes'});
@@ -184,6 +190,7 @@ export default {
             });
             return { ...state, stationInfoList:result };
         },
+        
         getStationChartResult(state, { payload:{ data, type }}){
             if ( type === 'speed') {
                 return { ...state, speedChartInfo:data, isLoading:false };

@@ -150,8 +150,7 @@ export default {
             return { ...state, stationMachList:data, isLoading:false };
         },
         getGasStation(state, { payload:{ data, mode  }}){
-            let currentNode = data && data.length ? data[0] : {};
-            let currentMach = currentNode.child && currentNode.child.length ? currentNode.child[0] : {};
+            let currentNode = data && data.length ? mode === 'single' ? data[0].child && data[0].child.length ? data[0].child[0] : {} : data[0] : {};
             data.forEach(item=>{
                 if( item.device_id ){
                     if ( mode === 'single') {
@@ -170,11 +169,12 @@ export default {
                 }
                 item.children = item.child;
             });
-            return { ...state, machTree:data, currentNode, currentMach, treeLoading:false };
+            return { ...state, machTree:data, currentNode, treeLoading:false };
         },
         updateGasStation(state, { payload:{ mode }}){
-            let currentNode = state.machTree && state.machTree.length ? state.machTree[0] : {};
-            let temp = state.machTree.map(item=>{
+            let prevTree = state.machTree;
+            let currentNode = prevTree && prevTree.length ? mode === 'single' ? prevTree[0].child && prevTree[0].child.length ? prevTree[0].child[0] : {} : prevTree[0] : {};
+            let temp = prevTree.map(item=>{
                 if( item.device_id ){
                     if ( mode === 'single') {
                         item.disabled = true;
@@ -198,9 +198,7 @@ export default {
         toggleNode(state, { payload }){
             return { ...state, currentNode:payload };
         },
-        toggleMach(state, { payload }){
-            return { ...state, currentMach:payload };
-        },
+       
         getAirMachStatus(state, { payload:{ airMachStatus }}){
             return { ...state, airMachStatus }
         },

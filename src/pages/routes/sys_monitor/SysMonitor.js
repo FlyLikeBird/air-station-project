@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Tree, Spin, Menu, message } from 'antd';
 import style from '@/pages/IndexPage.css';
 import ColumnCollapse from '@/pages/components/ColumnCollapse';
+import GasTrend from './gas_trend';
 import GasMonitor from './gas_monitor';
 import PressureMonitor from './pressure_monitor';
 import EleMonitor from './ele_monitor';
@@ -10,6 +11,7 @@ import DeviceMonitor from './device_monitor';
 import FlowMonitor from './flow_monitor';
 
 let subMenuMaps = {
+    'gas_trend':GasTrend,
     'gas_eff':GasMonitor,
     'gas_pressure':PressureMonitor,
     'gas_ele':EleMonitor,
@@ -19,7 +21,7 @@ let subMenuMaps = {
 
 function SmartManager({ dispatch, user, gasMach, device }){
     let { currentMenu, userMenu } = user;
-    let { machTree, treeLoading, currentNode, currentMach } = gasMach;
+    let { machTree, treeLoading, currentNode } = gasMach;
     let { stationList, currentStation } = device;
     const [subMenu, toggleSubMenu] = useState('');
     useEffect(()=>{
@@ -49,7 +51,7 @@ function SmartManager({ dispatch, user, gasMach, device }){
                 </div>
             </div>
             {
-                subMenu.menu_code === 'gas_eff' 
+                subMenu.menu_code === 'gas_eff' || subMenu.menu_code === 'gas_trend'
                 ?
                 <div className={style['card-container'] + ' ' + style['bottomRadius']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
                     <div className={style['card-title']}>统计对象</div>
@@ -66,8 +68,14 @@ function SmartManager({ dispatch, user, gasMach, device }){
                                 <div className={item.device_id === currentNode.device_id ? style['list-item'] + ' ' + style['selected'] : style['list-item']} key={index} onClick={()=>{
                                     if ( currentNode.device_id !== item.device_id ){
                                         dispatch({ type:'gasMach/toggleNode', payload:item });
-                                        dispatch({ type:'gasMonitor/fetchGasInfo', payload:{ type:'gas' }});
-                                        dispatch({ type:'gasMonitor/fetchGasChart'});
+                                        if ( subMenu.menu_code === 'gas_eff') {
+                                            dispatch({ type:'gasMonitor/fetchGasInfo', payload:{ type:'gas' }});
+                                            dispatch({ type:'gasMonitor/fetchGasChart'});
+                                            dispatch({ type:'gasMonitor/fetchTypeRule'});
+                                        }
+                                        if( subMenu.menu_code === 'gas_trend') {
+                                            dispatch({ type:'gasMonitor/fetchGasChart'});
+                                        }
                                     }                               
                                 }}>
                                     { item.device_name }
@@ -101,7 +109,8 @@ function SmartManager({ dispatch, user, gasMach, device }){
                                 onSelect={(selectedKeys, {node})=>{  
                                     dispatch({ type:'gasMach/toggleNode', payload:node });
                                     dispatch({ type:'gasMonitor/fetchEleInfo', payload:{ type:'ele' }});
-                                    dispatch({ type:'gasMonitor/fetchEleChart'});                                                
+                                    dispatch({ type:'gasMonitor/fetchEleChart'});  
+                                    dispatch({ type:'gasMonitor/fetchTypeRule'});                                              
                                 }}
                             />
                         }
@@ -124,10 +133,10 @@ function SmartManager({ dispatch, user, gasMach, device }){
                             <Tree
                                 className={style['custom-tree']}
                                 defaultExpandAll={true}                        
-                                selectedKeys={[currentMach.device_id]}
+                                selectedKeys={[currentNode.key]}
                                 treeData={machTree}
                                 onSelect={(selectedKeys, {node})=>{  
-                                    dispatch({ type:'gasMach/toggleMach', payload:node });                                
+                                    dispatch({ type:'gasMach/toggleNode', payload:node });                                
                                     dispatch({ type:'gasMonitor/fetchPressureDiff'});                                                                                
                                 }}
                             />

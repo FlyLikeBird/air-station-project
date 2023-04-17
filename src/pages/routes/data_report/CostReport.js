@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect  } from 'react';
 import { connect } from 'dva';
-import { Table, message, Select } from 'antd';
+import { Table, message, Select, Button, DatePicker } from 'antd';
 import { FileExcelOutlined } from '@ant-design/icons';
 import CustomDatePicker from '@/pages/components/CustomDatePicker';
 import Loading from '@/pages/components/Loading';
 import style from '@/pages/IndexPage.css';
 import XLSX from 'xlsx';
 import { downloadExcel } from '@/pages/utils/array';
+import BasicTimeManager from './BasicTimeManager';
+
 const { Option } = Select;
 let categoryMaps = {
     'cost':[
@@ -50,26 +52,29 @@ let categoryMaps = {
 }
 function CostReport({ dispatch, type, data, columns, layout, currentPage, total, timeType, startDate, endDate, containerWidth }){
     useEffect(()=>{
-        if ( type === 'running') {
-            dispatch({ type:'user/toggleTimeType', payload:'1' });
-        }
-        if ( type === 'basic') {
-            dispatch({ type:'dataReport/fetchBasicReport'});
-        } else if ( type === 'save') {
-            dispatch({ type:'dataReport/fetchSaveReport'});
-        } else {
-            dispatch({ type:'dataReport/initCostReport', payload:{ type }});
+        if ( type ){
+            if ( type === 'running') {
+                dispatch({ type:'user/toggleTimeType', payload:'1' });
+            }
+            if ( type === 'basic') {
+                dispatch({ type:'dataReport/fetchBasicReport'});
+            } else if ( type === 'save') {
+                dispatch({ type:'dataReport/fetchSaveReport'});
+            } else {
+                dispatch({ type:'dataReport/initCostReport', payload:{ type }});
+            }
         }
     },[type]);
     let category = categoryMaps[type];
-
+    console.log(data);
+    console.log(columns);
     return (
         <div style={{ height:'100%'}}>
-            <div style={{ height:'40px', display:'flex', justifyContent:'space-between' }}>
+            <div style={{ height: '40px', display:'flex', justifyContent:'space-between' }}>
                 {
                     type === 'basic'
                     ?
-                    <div></div>
+                    <BasicTimeManager />
                     :
                     <div style={{ display:'flex' }}>
                         <CustomDatePicker noToggle={type === 'running' ? true : false } onDispatch={()=>{
@@ -94,7 +99,7 @@ function CostReport({ dispatch, type, data, columns, layout, currentPage, total,
                     </div>
                 }
                         
-                
+                <div>
                 <div className={style['custom-button']} onClick={()=>{
                     if ( !data.length ){
                         message.info('数据源为空');
@@ -216,8 +221,9 @@ function CostReport({ dispatch, type, data, columns, layout, currentPage, total,
                         downloadExcel(sheet, fileTitle + '.xlsx');
                     }
                 }}><FileExcelOutlined style={{ fontSize:'1.2rem' }} /></div>
+                </div>
             </div>
-            <div className={style['card-container']} style={{ height:'calc( 100% - 40px)', borderRadius:'4px', overflow:'hidden' }}>         
+            <div className={style['card-container']} style={{ height: 'calc( 100% - 40px)', borderRadius:'4px', overflow:'hidden' }}>         
                 <Table
                     columns={columns}
                     dataSource={data}

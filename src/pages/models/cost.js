@@ -78,20 +78,43 @@ export default {
         getSaveCostResult(state, { payload:{ data }}){
             let { info } = data;
             let infoList = [
-                { color:'#af2bff', child:[{ title:'采集气电比', value: info ? (info.collect_ele_gas_ratio).toFixed(4) : 0, unit:'kwh/m³'}, { title:'采集电价', value:info ? info.collect_ele_price : 0, unit:'元/kwh' }]},
+                { value:'(', color:'#a3a3ad' },
+                { 
+                    color:'#af2bff',
+                    hasTag:true,
+                    tagName:'基准',
+                    flex:'2', 
+                    child:[
+                        { title:'采集气电比', value: info ? (info.collect_ele_gas_ratio).toFixed(4) : 0, unit:'kwh/m³'}, 
+                        { title:'当前用气量', value:info ? info.total_gas : 0, unit:'m³' }]
+                },
+                { value:'-', hasBg:true },
                 { 
                     color:'#04a3fe', 
+                    hasTag:true,
+                    tagName:'智控',
+                    flex:'2',
                     child:[
                         { title:'当前气电比', value:info ? (info.ele_gas_ratio).toFixed(4) : 0 , unit:'kwh/m³', hasTooltip:true, tooltipContent:info.ele_gas_ratio }, 
-                        { title:'当前电价', value:info ? (info.ele_price).toFixed(4) : 0, unit:'元/kwh', hasTooltip:true, tooltipContent:info.ele_price },
-                        { title:'当前产气量', value:info ? info.total_gas : 0, unit:'m³' }
+                        { title:'当前用气量', value:info ? info.total_gas : 0, unit:'m³' }
                     ]
                 },
+                { value:')', color:'#a3a3ad' },
+                { value:'×', hasBg:true },
+                {
+                    color:'',
+                    flex:'1',
+                    child:[
+                        { title:'当前电价', value:info ? (info.ele_price).toFixed(4) : 0, unit:'元/kwh', hasTooltip:true, tooltipContent:info.ele_price },
+                    ]
+                },
+                { value:'=', hasBg:true },
                 { 
                     color:'#5fd942', 
+                    hasTag:true,
+                    tagName:'节能',
+                    flex:'3',
                     child:[
-                        { title:'基准成本', value:info ? info.old_cost : 0, unit:'元', hasTooltip:true, tooltipContent:'节省成本 = [未启用智控前气电比(kwh/m³) - 启用智控后气电比(kwh/m³)] X 用气量(m³) X 平均单价(元/kwh)'}, 
-                        { title:'智控后成本', value:info ? info.total_cost : 0 , unit:'元'}, 
                         { title:'节省成本', value:info ? info.save_cost : 0, unit:'元' }
                     ]
                 }

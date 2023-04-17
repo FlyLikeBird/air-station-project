@@ -89,7 +89,7 @@ function DataReport({ dispatch, user, gasMach, dataReport }){
                         null
                     }
                     <CostReport 
-                        type={typeMaps[subMenu.menu_code] || 'cost' } 
+                        type={typeMaps[subMenu.menu_code]} 
                         data={list}
                         columns={columns}
                         currentPage={currentPage}

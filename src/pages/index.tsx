@@ -11,11 +11,21 @@ function isFullscreen(){
 }
 
 function IndexPage({ children, user }){
-    let { currentMenu, theme } = user;
+    let { currentMenu, theme, authorized, isFrame } = user;
     return (
         <div className={style['container'] + ' ' + ( theme === 'dark' ? style['dark'] : '' )} >
-            <Header />
-            <div className={style['main-content']} style={ isFullscreen() && currentMenu.menu_code === 'gas_home' ?  { height:'100%' } : { height:'calc(100% - 60px)'} }>
+            { 
+                authorized 
+                ?
+                isFrame 
+                ?
+                null
+                :
+                <Header />
+                :
+                null
+            }
+            <div className={style['main-content']} style={ ( isFullscreen() && currentMenu.menu_code === 'gas_home' ) || isFrame ?  { height:'100%' } : { height:'calc(100% - 60px)'} }>
                 { children }
             </div>
         </div>

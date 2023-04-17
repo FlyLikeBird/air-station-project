@@ -6,16 +6,11 @@ import CustomDatePicker from '@/pages/components/CustomDatePicker';
 import style from '@/pages/IndexPage.css';
 const { TabPane } = Tabs;
 
-let tabList = [
-    { tab:'瞬时流量', key:'1', unit:'m³/min' },
-    { tab:'压力', key:'2', unit:'bar' },
-    { tab:'气电比', key:'3', unit:'kwh/m³'},
-    { tab:'比功率', key:'4', unit:'m³/kwh' },
-    { tab:'电能', key:'6', unit:'kwh'}
-];
+
 function GasMonitor({ dispatch, user, gasMonitor }){
     useEffect(()=>{
         if ( user.authorized ){
+            dispatch({ type:'user/toggleTimeType', payload:'2' });
             dispatch({ type:'gasMonitor/initGasMonitor'});
         }
     },[user.authorized]);
@@ -24,13 +19,9 @@ function GasMonitor({ dispatch, user, gasMonitor }){
             dispatch({ type:'gasMonitor/reset'});
         }
     },[]);
+    
+    let { gasInfo, chartInfo, chartLoading, gasTabList, currentTab, typeRule } = gasMonitor;
    
-    let { gasInfo, chartInfo, chartLoading, dataType } = gasMonitor;
-    let [visible, setVisible] = useState(false);
-    let [value, setValue] = useState('');
-    useEffect(()=>{
-        setValue(chartInfo.minPressure);
-    },[chartInfo])
     return (
         <div style={{ height:'100%'}}>
             {
@@ -80,10 +71,17 @@ function GasMonitor({ dispatch, user, gasMonitor }){
             <div className={style['card-container']} style={{ height:'76%' }}>
                 <Tabs
                     className={style['custom-tabs'] + ' ' + style['flex-tabs']}
-                    activeKey={dataType}
+                    activeKey={currentTab.key}
                     onChange={activeKey=>{
-                        dispatch({ type:'gasMonitor/setDataType', payload:activeKey });
+                        let temp = gasTabList.filter(i=>i.key === activeKey )[0];
+                        dispatch({ type:'gasMonitor/toggleTab', payload:temp });
+                        if ( activeKey === '1' || activeKey === '2' ) {
+                            dispatch({ type:'user/toggleTimeType', payload:'2' });
+                        } else {
+                            dispatch({ type:'user/toggleTimeType', payload:'1' });
+                        }
                         dispatch({ type:'gasMonitor/fetchGasChart'});
+                        dispatch({ type:'gasMonitor/fetchTypeRule'});
                     }}
                     tabBarExtraContent={
                         (
@@ -96,44 +94,28 @@ function GasMonitor({ dispatch, user, gasMonitor }){
                     }
                 >
                     {
-                        tabList.map((item, index)=>(
-                           
+                        gasTabList.map((item, index)=>(                    
                             <TabPane tab={item.tab} key={item.key}>
                                 {
                                     chartLoading 
                                     ?
                                     null
                                     :
-                                    <LineChart info={item} data={chartInfo} theme={user.theme} onVisible={value=>setVisible(value)} timeType={user.timeType} />
+                                    <LineChart 
+                                        info={item} 
+                                        data={chartInfo} 
+                                        theme={user.theme} 
+                                        timeType={user.timeType} 
+                                        typeRule={typeRule}
+                                        dispatch={dispatch}
+                                        currentTab={currentTab}
+                                    />
                                 }
-                                   
                             </TabPane>
                            
                         ))
                     }                    
                 </Tabs>
-                <Modal
-                    visible={visible}
-                    onCancel={()=>setVisible(false)}
-                    closable={false}
-                    onOk={()=>{
-                        if ( value && +value >= 0 ){
-                            new Promise((resolve, reject)=>{
-                                dispatch({ type:'gasMonitor/setPressure', payload:{ resolve, reject, warning_min:value }});
-                            })
-                            .then(()=>{
-                                setVisible(false);
-                            })
-                            .catch(msg=>message.error(msg))
-                        } else {
-                            message.info('请输入合适的值');
-                        }
-                    }}
-                    okText='确定'
-                    cancelText='取消'
-                >
-                    <Input addonBefore="总管压力最小阈值" addonAfter="bar" value={value} onChange={e=>setValue(e.target.value)} />
-                </Modal>
             </div>
         </div>
     )

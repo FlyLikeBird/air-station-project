@@ -6,10 +6,14 @@ import ColumnCollapse from '@/pages/components/ColumnCollapse';
 import AutoControlManager from './AutoControlManager';
 import StationTableContainer from './StationTableContainer';
 import PlanManager from './PlanManager';
+import FlowChartManager from './FlowChartManager';
+import BasicTimeManager from './BasicTimeManager';
 
 let subMenuMaps = {
     'gas_mach_oper':StationTableContainer,
-    'gas_control_plan':PlanManager
+    'gas_control_plan':PlanManager,
+    'gas_control_flowchart':FlowChartManager,
+    'gas_control_basictime':BasicTimeManager
 };
 
 function SysControl({ dispatch, user, gasMach }){

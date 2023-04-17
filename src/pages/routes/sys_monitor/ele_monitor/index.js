@@ -6,14 +6,6 @@ import CustomDatePicker from '@/pages/components/CustomDatePicker';
 import style from '@/pages/IndexPage.css';
 const { TabPane } = Tabs;
 
-let tabList = [
-    { tab:'需量', key:'1', unit:'kw' },
-    { tab:'电压', key:'2', unit:'V' },
-    { tab:'视在功率', key:'3', unit:'kw'},
-    { tab:'有功功率', key:'4', unit:'kw'},
-    { tab:'无功功率', key:'5', unit:'kvar'},
-    { tab:'电流', key:'6', unit:'A'}
-];
 function EleMonitor({ dispatch, user, gasMonitor }){
     useEffect(()=>{
         if ( user.authorized ){
@@ -25,7 +17,7 @@ function EleMonitor({ dispatch, user, gasMonitor }){
             dispatch({ type:'gasMonitor/reset'});
         }
     },[])
-    let { gasInfo, chartInfo, chartLoading, dataType } = gasMonitor;
+    let { gasInfo, chartInfo, chartLoading, eleTabList, currentTab, typeRule } = gasMonitor;
     return (
         <div style={{ height:'100%'}}>
             {
@@ -75,10 +67,12 @@ function EleMonitor({ dispatch, user, gasMonitor }){
             <div className={style['card-container']} style={{ height:'76%' }}>
                 <Tabs
                     className={style['custom-tabs'] + ' ' + style['flex-tabs']}
-                    activeKey={dataType}
+                    activeKey={currentTab.key}
                     onChange={activeKey=>{
-                        dispatch({ type:'gasMonitor/setDataType', payload:activeKey });
+                        let temp = eleTabList.filter(i=>i.key === activeKey)[0];
+                        dispatch({ type:'gasMonitor/toggleTab', payload:temp });
                         dispatch({ type:'gasMonitor/fetchEleChart'});
+                        dispatch({ type:'gasMonitor/fetchTypeRule'});
                     }}
                     tabBarExtraContent={
                         (
@@ -91,7 +85,7 @@ function EleMonitor({ dispatch, user, gasMonitor }){
                     }
                 >
                     {
-                        tabList.map((item, index)=>(
+                        eleTabList.map((item, index)=>(
                            
                             <TabPane tab={item.tab} key={item.key}>
                                 {
@@ -99,7 +93,15 @@ function EleMonitor({ dispatch, user, gasMonitor }){
                                     ?
                                     null
                                     :
-                                    <LineChart info={item} data={chartInfo} theme={user.theme} />
+                                    <LineChart 
+                                        info={item} 
+                                        data={chartInfo} 
+                                        theme={user.theme} 
+                                        timeType={user.timeType} 
+                                        typeRule={typeRule}
+                                        dispatch={dispatch}
+                                        currentTab={currentTab}
+                                    />
                                 }
                                    
                             </TabPane>

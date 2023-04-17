@@ -2,12 +2,10 @@ import { routerRedux } from 'dva/router';
 import { login, userAuth, agentUserAuth, getNewThirdAgent, changePwd, changeActionPwd, checkPwd, setCompanyLogo, getWeather, getThirdAgentInfo, getCameraAccessToken } from '../services/userService';
 // import { uploadImg } from '../services/alarmService';
 import { message } from 'antd';
-import config from '../../../config';
 import { md5, encryptBy, decryptBy } from '../utils/encryption';
 import moment from 'moment';
 
-const reg = /\/info_manage_menu\/manual_input\/([^\/]+)\/(\d+)/;
-const companyReg =  /\?pid\=0\.\d+&&userId=(\d+)&&companyId=(\d+)/;
+const companyReg =  /\?pid\=0\.\d+&&userId=(\d+)&&companyId=(\d+)&&mode=(\w+)/;
 const agentReg = /\?agent=(.*)/;
 const agentReg2 = /acs-(.*)/;
 let energyList = [
@@ -22,7 +20,7 @@ function createWebSocket(url, data, companyId, fromAgent, dispatch){
     let ws = new WebSocket(url);
     // console.log(data);
     ws.onopen = function(){
-        if ( data.agent_id && !fromAgent ){
+        if ( data.agent_id ){
             ws.send(`agent:${data.agent_id}`);
         } else {
             ws.send(`com:${companyId}`);
@@ -58,14 +56,7 @@ function reconnect(url, data, companyId, dispatch){
     },2000)
 }
 let socket = null;
-let menu = [
-    { menu_code:'home', menu_name:'项目首页'},
-    { menu_code:'sys_monitor', menu_name:'系统监控'},
-    { menu_code:'alarm_manager', menu_name:'警报管理'},
-    { menu_code:'data_report', menu_name:'数据报表'},
-    { menu_code:'mach_manager', menu_name:'设备管理' },
-    { menu_code:'sys_manager', menu_name:'系统管理' },
-];
+
 const initialState = {
     userInfo:{},
     userMenu:[],
@@ -94,6 +85,7 @@ const initialState = {
     pagesize:0,
     // 判断是否是中台打开的子窗口
     fromAgent:false,
+    isFrame:false,
     // 其他中台商ID，根据这个ID对登录页做特殊判断
     thirdAgent:{},
     // 浅色主题light 深色主题dark 
@@ -135,7 +127,7 @@ export default {
         *userAuth(action, {call, select, put, all}){ 
             try {
                 let { user: { userInfo, authorized, socket, thirdAgent }} = yield select();
-                let { dispatch, query, userid, pathname, resolve, reject } = action.payload || {};
+                let { dispatch, query, pathname, resolve, reject } = action.payload || {};
                 // 如果是第三方服务商
                 // let thirdAgent;
                 // if ( localStorage.getItem('third_agent') ){
@@ -143,13 +135,21 @@ export default {
                 //     yield put({ type:'setThirdAgentInfo', payload:{ data:thirdAgent }});
                 // }
                 if ( !authorized ){
+                    // 中台商跳转到某个具体项目时，清空旧的socket连接
+                    if ( socket && socket.close ){
+                        socket.close();
+                        socket = null;
+                    }
                     // 判断是否是服务商用户新开的公司标签页
                     let matchResult = companyReg.exec(query);
                     let company_id = matchResult ? matchResult[2] : null;
                     let user_id = matchResult ? matchResult[1] : null;
+                    let fromAgent = matchResult ? true : false;
+                    let isFrame = matchResult && matchResult[3] === 'frame' ? true : false;
                     if ( user_id ){
                         localStorage.setItem('user_id', user_id);
                     }
+                    console.log('a');
                     let { data } = yield call( matchResult ? agentUserAuth : userAuth, matchResult ? { app_type:3, company_id } : { app_type:3 } );
                     if ( data && data.code === '0' ){
                         // 先判断是否是第三方代理商账户
@@ -159,10 +159,13 @@ export default {
                             let temp = matchResult ? matchResult[1] : '';
                             yield put({ type:'fetchNewThirdAgent', payload:temp });
                         }
-                        yield put({type:'setUserInfo', payload:{ data:data.data, company_id, pathname, fromAgent:matchResult ? true : false } });
+                        yield put({type:'setUserInfo', payload:{ data:data.data, company_id, pathname, fromAgent, isFrame } });
+                        console.log('b');
                         yield put({ type:'setContainerWidth' });
                         yield put({type:'weather'});
-                        if ( resolve && typeof resolve === 'function') resolve();
+                        if ( !fromAgent && data.data.agent_id ) {
+                            yield put(routerRedux.push('/agent'));
+                        }
                         // websocket 相关逻辑
                         if ( !WebSocket ) {
                             window.alert('当前浏览器不支持websocket,推荐使用chrome浏览器');
@@ -171,6 +174,7 @@ export default {
                         let config = window.g;
                         let socketCompanyId = company_id ? company_id : data.data.companys.length ? data.data.companys[0].company_id : null ;
                         socket = createWebSocket(`ws://${config.socketHost}:${config.socketPort}`, data.data, socketCompanyId, matchResult ? true : false, dispatch);
+                        
                     } else {
                         // 登录状态过期，跳转到登录页重新登录(特殊账号跳转到特殊登录页)
                         yield put({ type:'loginOut'});
@@ -193,7 +197,7 @@ export default {
                 password = md5(password, user_name);
                 var { data }  = yield call(login, { user_name, password, app_type:'3' });
                 if ( data && data.code === '0'){   
-                    let { user_id, user_name, agent_id, companys } = data.data;
+                    let { user_id, user_name, agent_id, companys, menuData } = data.data;
                     let companysMap = companys.map((item)=>{
                         return { [encodeURI(item.company_name)]:item.company_id };
                     })
@@ -208,10 +212,11 @@ export default {
                     //  登录后跳转到默认页面
                     // 如果是服务商用户则跳转到中台监控页
                     if ( agent_id ) {
-                        yield put(routerRedux.push('/agentMonitor'));
+                        yield put(routerRedux.push('/agent'));
                     } else {
-                        // 跳转到项目列表页
-                        yield put(routerRedux.push('/'));
+                        // 跳转到项目列表页，取项目菜单列表的第一项
+                        let jumpPath = menuData.length ? '/' + menuData[0].menu_code : '/';
+                        yield put(routerRedux.push(jumpPath));
                     }
                 } else {
                     if (reject) reject( data && data.msg );
@@ -228,21 +233,17 @@ export default {
         },
         *loginOut(action, { call, put, select }){
             let { user:{ userInfo, thirdAgent }} = yield select();
-            if ( Object.keys(thirdAgent).length ){
-                yield put({ type:'clearUserInfo'});
-                yield put({ type:'fields/cancelAll'});
-                yield put({ type:'gasMach/reset'});
-                yield put(routerRedux.push(`/login?agent=${encryptBy(thirdAgent.agent_id)}`)); 
-            } else {
-                yield put({type:'clearUserInfo'});
-                yield put({ type:'fields/cancelAll'});
-                yield put({ type:'gasMach/reset'});
-                yield put(routerRedux.push('/login'));
-            }
+            localStorage.clear();
+            yield put({ type:'resetUserInfo'});
+            yield put(routerRedux.push('/login'));
             if ( socket && socket.close ){
                 socket.close();
                 socket = null;
             }
+        },
+        *resetUserInfo(action, { call, put }){
+            yield put({type:'clearUserInfo'});
+            yield put({ type:'gasMach/reset'});     
         },
         *fetchNewThirdAgent(action, { put, select, call}){
             let { data } = yield call(getNewThirdAgent, { agent_code:action.payload });
@@ -303,16 +304,18 @@ export default {
         }
     },
     reducers:{
-        setUserInfo(state, { payload:{ data, company_id, pathname, fromAgent }}){
+        setUserInfo(state, { payload:{ data, company_id, pathname, fromAgent, isFrame }}){
             let { menuData, companys } = data;
+            console.log(menuData);
             let currentCompany = company_id ? companys.filter(i=>i.company_id == company_id)[0] : companys[0];
-            
-            return { ...state, userInfo:data, userMenu:menuData, companyList:companys || [], company_id:currentCompany.company_id, currentCompany, fromAgent, authorized:true };
+            let routePath = menuData.map(i=>i.menu_code);
+            return { ...state, userInfo:data, userMenu:menuData, routePath, companyList:companys || [], company_id:currentCompany.company_id, currentCompany, fromAgent, authorized:true, isFrame };
         },
         setRoutePath(state, { payload:{ pathname }}){
             let currentMenu;
-            if ( pathname === '/') {
+            if ( pathname === '/' || pathname === '/gas_home') {
                 currentMenu = state.userMenu[0];
+                // 当跳转到首页时，调整为跳转到菜单列表的第一项
             } else {
                 currentMenu = state.userMenu.filter(i=>i.menu_code === pathname.substring(1, pathname.length ))[0] || {}
             } 
@@ -386,7 +389,6 @@ export default {
             return { ...state, AMap:payload };
         },
         clearUserInfo(state){
-            localStorage.clear();
             return initialState;
         }
     }
